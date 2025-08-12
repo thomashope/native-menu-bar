@@ -5,6 +5,15 @@
 
 #pragma comment(lib, "opengl32.lib")
 
+// Menu item IDs
+#define ID_FILE_NEW     1001
+#define ID_FILE_OPEN    1002
+#define ID_FILE_SAVE    1003
+#define ID_FILE_EXIT    1004
+#define ID_EDIT_COPY    2001
+#define ID_EDIT_PASTE   2002
+#define ID_HELP_ABOUT   3001
+
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -17,6 +26,35 @@ void display()
     glVertex2i(1, -1);
     glEnd();
     glFlush();
+}
+
+HMENU CreateMenuBar()
+{
+    HMENU hMenuBar = CreateMenu();
+    HMENU hFileMenu = CreatePopupMenu();
+    HMENU hEditMenu = CreatePopupMenu();
+    HMENU hHelpMenu = CreatePopupMenu();
+
+    // File menu
+    AppendMenu(hFileMenu, MF_STRING, ID_FILE_NEW, L"&New");
+    AppendMenu(hFileMenu, MF_STRING, ID_FILE_OPEN, L"&Open...");
+    AppendMenu(hFileMenu, MF_STRING, ID_FILE_SAVE, L"&Save");
+    AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(hFileMenu, MF_STRING, ID_FILE_EXIT, L"E&xit");
+
+    // Edit menu
+    AppendMenu(hEditMenu, MF_STRING, ID_EDIT_COPY, L"&Copy");
+    AppendMenu(hEditMenu, MF_STRING, ID_EDIT_PASTE, L"&Paste");
+
+    // Help menu
+    AppendMenu(hHelpMenu, MF_STRING, ID_HELP_ABOUT, L"&About...");
+
+    // Add popup menus to menu bar
+    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hFileMenu, L"&File");
+    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hEditMenu, L"&Edit");
+    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hHelpMenu, L"&Help");
+
+    return hMenuBar;
 }
 
 LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -34,6 +72,33 @@ LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
         PostMessage(hWnd, WM_PAINT, 0, 0);
+        return 0;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case ID_FILE_NEW:
+            MessageBox(hWnd, L"New file selected", L"Menu", MB_OK);
+            break;
+        case ID_FILE_OPEN:
+            MessageBox(hWnd, L"Open file selected", L"Menu", MB_OK);
+            break;
+        case ID_FILE_SAVE:
+            MessageBox(hWnd, L"Save file selected", L"Menu", MB_OK);
+            break;
+        case ID_FILE_EXIT:
+            PostQuitMessage(0);
+            break;
+        case ID_EDIT_COPY:
+            MessageBox(hWnd, L"Copy selected", L"Menu", MB_OK);
+            break;
+        case ID_EDIT_PASTE:
+            MessageBox(hWnd, L"Paste selected", L"Menu", MB_OK);
+            break;
+        case ID_HELP_ABOUT:
+            MessageBox(hWnd, L"OpenGL Triangle Demo\nVersion 1.0", L"About", MB_OK);
+            break;
+        }
         return 0;
 
     case WM_CHAR:
@@ -93,6 +158,10 @@ HWND CreateOpenGLWindow(wchar_t* title, int x, int y, int width, int height, BYT
             L"Error", MB_OK);
         return NULL;
     }
+
+    // Create and set the menu
+    HMENU hMenu = CreateMenuBar();
+    SetMenu(hWnd, hMenu);
 
     hDC = GetDC(hWnd);
 
