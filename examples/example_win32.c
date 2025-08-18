@@ -161,7 +161,7 @@ HWND createWindow(wchar_t* title, int x, int y, int width, int height)
 
 int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE hPreviousInst, LPSTR lpszCmdLine, int nCmdShow)
 {
-    HWND hWnd = createWindow(L"Menu Bar Example - Win32", 0, 0, 400, 300);
+    HWND hWnd = createWindow(L"Menu Bar Example - Win32", 100, 100, 400, 300);
     if (!hWnd)
         return 1;
 

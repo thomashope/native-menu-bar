@@ -25,6 +25,7 @@ function linkThirdPartyMacFramework(relativePath)
     embedAndSign { filename }
 end
 
+
 workspace "Examples"
 
 	location ("build/".._ACTION)
@@ -38,93 +39,91 @@ workspace "Examples"
         defines { "CONFIG_RELEASE" }
         optimize "On"
 
--- TODO: find a better way of adding the platform specific projects
 
-if _ACTION == "xcode4" then
+if _TARGET_OS == "windows" then
 
-ExampleProject "Mac_Cocoa"
 
-    links {
-        "Cocoa.framework"
-    }
+    ExampleProject "example_win32"
 
-    files {
-        "Info.plist",
-        "main_mac_cocoa.mm"
-    }
+        files {
+            "example_win32.c",
+            "../native_menu_bar.h",
+            "../native_menu_bar.c",
+        }
 
-ExampleProject "Mac_SDL2"
 
-    links {
-        "Cocoa.framework"
-    }
+else
 
-    includeThirdPartyMacFramework "third_party/sdl2/mac/SDL2.framework"
-    linkThirdPartyMacFramework "third_party/sdl2/mac/SDL2.framework"
 
-    xcodebuildsettings {
-        ["LD_RUNPATH_SEARCH_PATHS"] = "$(inherited) @executable_path/../Frameworks", -- tell the executable where to find the frameworks. Path is relative to executable location inside .app bundle
-    }
+    ExampleProject "Mac_Cocoa"
 
-    files {
-        "Info.plist",
-        "main_mac_sdl2.mm"
-    }
+        links {
+            "Cocoa.framework"
+        }
 
-ExampleProject "Mac_nmb_native"
+        files {
+            "Info.plist",
+            "main_mac_cocoa.mm"
+        }
 
-    links {
-        "Cocoa.framework"
-    }
+    ExampleProject "Mac_nmb_native"
 
-    files {
-        "Info.plist",
-        "main_mac_nmb_native.mm",
-        "../native_menu_bar.h",
-        "../native_menu_bar.cpp",
-    }
+        links {
+            "Cocoa.framework"
+        }
+
+        files {
+            "Info.plist",
+            "main_mac_nmb_native.mm",
+            "../native_menu_bar.h",
+            "../native_menu_bar.cpp",
+        }
+
 
 end
 
-if _ACTION == "vs2022" then
-
-ExampleProject "Win32"
-
-    files {
-    	"main_win32.cpp"
-    }
 
 ExampleProject "example_sdl2"
 
-    externalincludedirs {
-        "third_party/sdl2/windows/include"
-    }
-
-    libdirs {
-        "third_party/sdl2/windows/lib/x64",
-    }
-
-    postbuildcommands {
-        "{COPYFILE} " .. _MAIN_SCRIPT_DIR .. "/third_party/sdl2/windows/lib/x64/SDL2.dll %{cfg.buildtarget.directory}",
-    }
-
-    links {
-        "SDL2",
-        "SDL2main",
-    }
-
-	files {
-		"example_sdl2.c",
-        "../native_menu_bar.h",
-        "../native_menu_bar.c",
-	}
-
-ExampleProject "example_win32"
-
     files {
-        "example_win32.c",
+        "example_sdl2.c",
         "../native_menu_bar.h",
         "../native_menu_bar.c",
     }
 
-end
+    filter "action:vs*"
+
+        externalincludedirs {
+            "third_party/sdl2/windows/include"
+        }
+
+        libdirs {
+            "third_party/sdl2/windows/lib/x64",
+        }
+
+        links {
+            "SDL2",
+            "SDL2main",
+        }
+
+        postbuildcommands {
+            "{COPYFILE} " .. _MAIN_SCRIPT_DIR .. "/third_party/sdl2/windows/lib/x64/SDL2.dll %{cfg.buildtarget.directory}",
+        }
+
+    filter "action:xcode*"
+
+        links {
+            "Cocoa.framework"
+        }
+
+        includeThirdPartyMacFramework "third_party/sdl2/mac/SDL2.framework"
+        linkThirdPartyMacFramework "third_party/sdl2/mac/SDL2.framework"
+
+        xcodebuildsettings {
+            ["LD_RUNPATH_SEARCH_PATHS"] = "$(inherited) @executable_path/../Frameworks", -- tell the executable where to find the frameworks. Path is relative to executable location inside .app bundle
+        }
+
+        files {
+            "Info.plist",
+            "main_mac_sdl2.mm"
+        }
