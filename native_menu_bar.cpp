@@ -2,29 +2,55 @@
 
 #ifdef _WIN32
 
-#include <vector>
+#include <stdio.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 namespace
 {
+	const size_t k_maxEvents = 64;
+
     struct Ctx
     {
         HWND hwnd = 0;
+		HMENU menuBar = 0;
         WNDPROC originalWndProc = NULL;
         uintptr_t nextId = 1;
-        std::vector<nmb_Event_t> events;
+
+		size_t eventsHead = 0;
+		size_t eventsTail = 0;
+        nmb_Event_t events[k_maxEvents] = {};
+
+        bool getEvent(nmb_Event_t& e)
+        {
+            if (eventsHead == eventsTail) return false; // No events available
+            e = events[eventsHead];
+            eventsHead = (eventsHead + 1) % k_maxEvents;
+            return true;
+		}
+
+        void pushEvent(const nmb_Event_t& e)
+        {
+			// TODO: print a warning if the user isn't consuming events fast enough
+            if ((eventsTail + 1) % k_maxEvents == eventsHead)
+            {
+                // Buffer is full, discard the oldest event
+                eventsHead = (eventsHead + 1) % k_maxEvents;
+            }
+            events[eventsTail] = e;
+            eventsTail = (eventsTail + 1) % k_maxEvents;
+		}
     } g;
 
-    LRESULT CALLBACK customWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK menuBarWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         if (uMsg == WM_COMMAND)
         {
             nmb_Event_t e;
             e.sender = (nmb_Handle)(LOWORD(wParam));
             e.event = nmb_EventType_itemTriggered;
-            g.events.push_back(e);
+			g.pushEvent(e);
             return 0;
         }
 
@@ -37,11 +63,11 @@ static_assert(sizeof(HWND) == sizeof(nmb_Handle), "Windows handles must be casta
 nmb_Handle nmb_setup(void* hWnd)
 {
 	g.hwnd = (HWND)hWnd;
-    HMENU hMenuBar = CreateMenu();
-    SetMenu(g.hwnd, hMenuBar);
-    g.originalWndProc = (WNDPROC)SetWindowLongPtr(g.hwnd, GWLP_WNDPROC, (LONG_PTR)customWndProc);
+    g.originalWndProc = (WNDPROC)SetWindowLongPtr(g.hwnd, GWLP_WNDPROC, (LONG_PTR)menuBarWndProc);
+    g.menuBar = CreateMenu();
+    SetMenu(g.hwnd, g.menuBar);
     DrawMenuBar(g.hwnd);
-    return hMenuBar;
+    return g.menuBar;
 }
 
 nmb_Handle nmb_appendSubmenu(nmb_Handle parent, const char* caption)
@@ -78,33 +104,49 @@ void nmb_appendSeparator(nmb_Handle parent)
 
 bool nmb_pollEvent(nmb_Event_t* event)
 {
-    if (g.events.empty()) return false;
-    *event = g.events.front();
-    g.events.erase(g.events.begin());
-    return true;
+	return g.getEvent(*event);
 };
 
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 {
-    // TODO
+    UINT flags = MF_BYCOMMAND | (checked ? MF_CHECKED : MF_UNCHECKED);
+    CheckMenuItem(GetMenu(g.hwnd), (UINT)menuItem, flags);
+    DrawMenuBar(g.hwnd);
 }
 
 bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 {
-    // TODO
-    return false;
+    UINT state = GetMenuState(g.menuBar, (UINT)menuItem, MF_BYCOMMAND);
+    if (state == (UINT)-1)
+    {
+        printf("Failed to get menu item state: %lu\n", GetLastError());
+        return false;
+    }
+    return (state & MF_CHECKED) == MF_CHECKED;
 }
 
 
 void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 {
-    // TODO
+    UINT flags = MF_BYCOMMAND | (enabled ? MF_ENABLED : MF_GRAYED);
+    BOOL result = EnableMenuItem(g.menuBar, (UINT)menuItem, flags);
+    if (result == -1)
+    {
+        printf("Failed to set menu item enabled state: %lu\n", GetLastError());
+        return;
+    }
+    DrawMenuBar(g.hwnd);
 }
 
 bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 {
-    // TODO
-    return false;
+    UINT state = GetMenuState(g.menuBar, (UINT)menuItem, MF_BYCOMMAND);
+    if (state == (UINT)-1)
+    {
+        printf("Failed to get menu item state: %lu\n", GetLastError());
+        return false;
+    }
+    return (state & MF_GRAYED) != MF_GRAYED;
 }
 
 #else

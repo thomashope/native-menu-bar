@@ -13,6 +13,8 @@ HWND g_hwnd = NULL;
 nmb_Handle idFileNew;
 nmb_Handle idFileOpen;
 nmb_Handle idFileSave;
+nmb_Handle idFileEnabler;
+nmb_Handle idFileEnablee;
 nmb_Handle idFileExit;
 nmb_Handle idEditCopy;
 nmb_Handle idEditPaste;
@@ -29,12 +31,18 @@ void createMenuBar(HWND hWnd)
     idFileNew = nmb_appendMenuItem(hFileMenu, "New");
     idFileOpen = nmb_appendMenuItem(hFileMenu, "Open...");
     idFileSave = nmb_appendMenuItem(hFileMenu, "Save");
+    nmb_appendMenuItem(hFileMenu, "Check Me");
+    idFileEnabler = nmb_appendMenuItem(hFileMenu, "Enabler");
+    idFileEnablee = nmb_appendMenuItem(hFileMenu, "Enablee");
     nmb_appendSeparator(hFileMenu);
     idFileExit = nmb_appendMenuItem(hFileMenu, "Exit");
 
     // Edit menu
     idEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
     idEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
+
+	nmb_Handle submenu = nmb_appendSubmenu(hEditMenu, "Submenu");
+	nmb_appendMenuItem(submenu, "Submenu Item 1");
 
     // Help menu
     idHelpAbout = nmb_appendMenuItem(hHelpMenu, "About...");
@@ -71,6 +79,10 @@ void handleEvents()
         {
             MessageBox(g_hwnd, L"Save file selected", L"Menu", MB_OK);
         }
+        else if (e.sender == idFileEnabler)
+        {
+			nmb_setMenuItemEnabled(idFileEnablee, !nmb_isMenuItemEnabled(idFileEnablee));
+        }
         else if (e.sender == idFileExit)
         {
             PostQuitMessage(0);
@@ -86,6 +98,10 @@ void handleEvents()
         else if (e.sender == idHelpAbout)
         {
             MessageBox(g_hwnd, L"OpenGL Triangle Demo\nVersion 1.0", L"About", MB_OK);
+        }
+        else
+        {
+            nmb_setMenuItemChecked(e.sender, !nmb_isMenuItemChecked(e.sender));
         }
     }
 }
