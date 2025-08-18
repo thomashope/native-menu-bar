@@ -93,7 +93,7 @@ ExampleProject "Win32"
     	"main_win32.cpp"
     }
 
-ExampleProject "Win_SDL2"
+ExampleProject "example_sdl2"
 
     externalincludedirs {
         "third_party/sdl2/windows/include"
@@ -113,13 +113,13 @@ ExampleProject "Win_SDL2"
     }
 
 	files {
-		"main_win_sdl2.cpp"
+		"example_sdl2.cpp"
 	}
 
-ExampleProject "Win_nmb"
+ExampleProject "example_win32"
 
     files {
-        "main_win_nmb.cpp",
+        "example_win32.cpp",
         "../native_menu_bar.h",
         "../native_menu_bar.cpp",
     }

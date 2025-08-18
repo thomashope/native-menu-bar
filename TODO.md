@@ -1,34 +1,34 @@
-## Goals
+## Plan
 
-Desired User Features
+MVP Features
 
-- create main menu bar with menus and sub-menus
-- regular text menu items
-- separator lines
-- check / uncheck mark next to menu items
+- [x] create main menu bar with menus and sub-menus
+- [x] append regular text menu items
+- [x] separator lines
+- [x] check / uncheck mark next to menu items
 
-Desired API features
+Release Work
 
-- append items to menus
-- insert items into menus at specific place
-- delete items and entire menus/sub-menus
-- enable/disable menu items
+- [ ] compile as C99 to latest C, C++98 to latest C++
+- [ ] compile on all of the above without warnings
+- [ ] make sure i'm doing cleanup and proper memory management and API and examples
+- [ ] simplified mac and windows examples
+- [ ] cross platform SDL2 example
+- [ ] cross platform SFML example (or something else popular)
 
-Platform specific / extra stuff
+Further Work (prioritise top to bottom)
 
-- keyboard shortcuts
-- windows accelerator keys?
+- [ ] insert items into menus at specific place
+- [ ] delete items and entire menus/sub-menus
+- [ ] enable/disable menu items
+- [ ] Windows accelerator keys (the thing that happens when you press Alt)
+- [ ] Keyboard shortcuts (key equivalents on mac)
+
+Extra ideas
+
 - easily create the default menus expected on each platform?
-- Dear ImGui implementation?
-
-## Architecture
-
-Desired Platforms
-
-- windows with native win32
-- mac native
-- SDL2 on windows and mac
-- linux?
+- Dear ImGui implementation
+- Linux
 
 API
 
@@ -49,3 +49,7 @@ API
 	- id: A unique string for the menu entry. Used for menu entries with "children" to allow adding additional child entries.
 	- platform: One of the strings: "OSX", "!OSX", "Windows", "!Windows", "Linux" or "!Linux". Controls what platforms the entry is shown on.
 	- Each menu entry requires at minimum, the key "caption" for a non-functionality entry, or "command" for an entry that performs an action.
+
+## References
+
+- https://sourceforge.net/projects/tinyfiledialogs/files/
