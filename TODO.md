@@ -15,6 +15,7 @@ Release Work
 - [ ] simplified mac and windows examples
 - [ ] cross platform SDL2 example
 - [ ] cross platform SFML example (or something else popular)
+- [ ] inline documentation in .h
 
 Further Work (prioritise top to bottom)
 

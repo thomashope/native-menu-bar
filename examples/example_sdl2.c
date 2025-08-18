@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "../native_menu_bar.h"
 
@@ -15,8 +16,8 @@ nmb_Handle g_hEditCopy = 0;
 nmb_Handle g_hEditPaste = 0;
 nmb_Handle g_hHelpAbout = 0;
 
-SDL_Window* g_window = nullptr;
-SDL_Renderer* g_renderer = nullptr;
+SDL_Window* g_window = NULL;
+SDL_Renderer* g_renderer = NULL;
 
 void createMenuBar(void* nativeWindowHandle)
 {
@@ -136,7 +137,7 @@ int main(int argc, char* argv[])
 	}
 #else
 	// On macOS, pass nothing (native_menu_bar will handle it)
-	createMenuBar(nullptr);
+	createMenuBar(NULL);
 #endif
 
 	bool running = true;
@@ -157,7 +158,6 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-
 
 		handleEvents();
 

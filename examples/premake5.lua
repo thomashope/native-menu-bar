@@ -113,9 +113,9 @@ ExampleProject "example_sdl2"
     }
 
 	files {
-		"example_sdl2.cpp",
+		"example_sdl2.c",
         "../native_menu_bar.h",
-        "../native_menu_bar.cpp",
+        "../native_menu_bar.c",
 	}
 
 ExampleProject "example_win32"
@@ -123,7 +123,7 @@ ExampleProject "example_win32"
     files {
         "example_win32.cpp",
         "../native_menu_bar.h",
-        "../native_menu_bar.cpp",
+        "../native_menu_bar.c",
     }
 
 end
