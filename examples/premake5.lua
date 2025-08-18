@@ -113,7 +113,9 @@ ExampleProject "example_sdl2"
     }
 
 	files {
-		"example_sdl2.cpp"
+		"example_sdl2.cpp",
+        "../native_menu_bar.h",
+        "../native_menu_bar.cpp",
 	}
 
 ExampleProject "example_win32"
