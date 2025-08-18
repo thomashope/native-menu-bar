@@ -3,9 +3,9 @@
 OS_NAME=`uname -o 2>/dev/null || uname -s`
 
 if [ $OS_NAME == "Msys" ]; then
-	./tools_premake/premake5.exe "$@"
+	./tools/premake5.exe "$@"
 elif [ $OS_NAME == "Darwin" ]; then
-	./tools_premake/premake5-mac "$@"
+	./tools/premake5-mac "$@"
 else
-	./tools_premake/premake5-linux "$@"
+	./tools/premake5-linux "$@"
 fi

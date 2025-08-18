@@ -26,7 +26,7 @@ function linkThirdPartyMacFramework(relativePath)
 end
 
 
-workspace "Examples"
+workspace "examples"
 
 	location ("build/".._ACTION)
     configurations { "Debug", "Release" }
@@ -94,11 +94,11 @@ ExampleProject "example_sdl2"
     filter "action:vs*"
 
         externalincludedirs {
-            "third_party/sdl2/windows/include"
+            "lib/sdl2/windows/include"
         }
 
         libdirs {
-            "third_party/sdl2/windows/lib/x64",
+            "lib/sdl2/windows/lib/x64",
         }
 
         links {
@@ -107,7 +107,7 @@ ExampleProject "example_sdl2"
         }
 
         postbuildcommands {
-            "{COPYFILE} " .. _MAIN_SCRIPT_DIR .. "/third_party/sdl2/windows/lib/x64/SDL2.dll %{cfg.buildtarget.directory}",
+            "{COPYFILE} " .. _MAIN_SCRIPT_DIR .. "/lib/sdl2/windows/lib/x64/SDL2.dll %{cfg.buildtarget.directory}",
         }
 
     filter "action:xcode*"
@@ -116,8 +116,8 @@ ExampleProject "example_sdl2"
             "Cocoa.framework"
         }
 
-        includeThirdPartyMacFramework "third_party/sdl2/mac/SDL2.framework"
-        linkThirdPartyMacFramework "third_party/sdl2/mac/SDL2.framework"
+        includeThirdPartyMacFramework "lib/sdl2/mac/SDL2.framework"
+        linkThirdPartyMacFramework "lib/sdl2/mac/SDL2.framework"
 
         xcodebuildsettings {
             ["LD_RUNPATH_SEARCH_PATHS"] = "$(inherited) @executable_path/../Frameworks", -- tell the executable where to find the frameworks. Path is relative to executable location inside .app bundle
