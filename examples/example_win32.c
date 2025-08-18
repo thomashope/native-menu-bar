@@ -127,9 +127,10 @@ LRESULT WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 HWND createWindow(wchar_t* title, int x, int y, int width, int height)
 {
-    static HINSTANCE hInstance = GetModuleHandle(NULL);
+    HINSTANCE hInstance = GetModuleHandle(NULL);
 
-    WNDCLASS wc = {};
+    WNDCLASS wc;
+	memset(&wc, 0, sizeof(WNDCLASS));
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
@@ -171,7 +172,7 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE hPreviousInst, LPSTR lpsz
     bool running = true;
     while (running)
     {
-        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
             {

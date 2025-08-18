@@ -5,7 +5,8 @@ function ExampleProject(name)
     location ("build/".._ACTION)
     targetdir ("bin/".. _ACTION.."/"..name.."/%{cfg.buildcfg}")
     language "C++"
-    cppdialect "C++11"
+    cppdialect "C++98"
+    cdialect "c89"
     architecture "x86_64"
     warnings "Default"
     flags "MultiProcessorCompile"
@@ -121,7 +122,7 @@ ExampleProject "example_sdl2"
 ExampleProject "example_win32"
 
     files {
-        "example_win32.cpp",
+        "example_win32.c",
         "../native_menu_bar.h",
         "../native_menu_bar.c",
     }
