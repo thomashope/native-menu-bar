@@ -49,7 +49,7 @@ static LRESULT CALLBACK menuBarWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	if (uMsg == WM_COMMAND)
 	{
 		nmb_Event_t e;
-		e.sender = (nmb_Handle)(LOWORD(wParam));
+		e.sender = (nmb_Handle)(uintptr_t)(LOWORD(wParam));
 		e.event = nmb_EventType_itemTriggered;
 		pushEvent(&e);
 		return 0;
@@ -98,7 +98,7 @@ nmb_Handle nmb_appendMenuItem(nmb_Handle parent, const char* caption)
 		return NULL;
 	}
 	DrawMenuBar(g.hwnd);
-	return (nmb_Handle)id;
+	return (nmb_Handle)(uintptr_t)id;
 }
 
 void nmb_appendSeparator(nmb_Handle parent)
@@ -115,13 +115,13 @@ bool nmb_pollEvent(nmb_Event_t* event)
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 {
 	UINT flags = MF_BYCOMMAND | (checked ? MF_CHECKED : MF_UNCHECKED);
-	CheckMenuItem(GetMenu(g.hwnd), (UINT)menuItem, flags);
+	CheckMenuItem(GetMenu(g.hwnd), (UINT)(uintptr_t)menuItem, flags);
 	DrawMenuBar(g.hwnd);
 }
 
 bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 {
-	UINT state = GetMenuState(g.menuBar, (UINT)menuItem, MF_BYCOMMAND);
+	UINT state = GetMenuState(g.menuBar, (UINT)(uintptr_t)menuItem, MF_BYCOMMAND);
 	if (state == (UINT)-1)
 	{
 		printf("Failed to get menu item state: %lu\n", GetLastError());
@@ -134,7 +134,7 @@ bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 {
 	UINT flags = MF_BYCOMMAND | (enabled ? MF_ENABLED : MF_GRAYED);
-	BOOL result = EnableMenuItem(g.menuBar, (UINT)menuItem, flags);
+	BOOL result = EnableMenuItem(g.menuBar, (UINT)(uintptr_t)menuItem, flags);
 	if (result == -1)
 	{
 		printf("Failed to set menu item enabled state: %lu\n", GetLastError());
@@ -145,7 +145,7 @@ void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 
 bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 {
-	UINT state = GetMenuState(g.menuBar, (UINT)menuItem, MF_BYCOMMAND);
+	UINT state = GetMenuState(g.menuBar, (UINT)(uintptr_t)menuItem, MF_BYCOMMAND);
 	if (state == (UINT)-1)
 	{
 		printf("Failed to get menu item state: %lu\n", GetLastError());

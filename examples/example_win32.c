@@ -3,6 +3,8 @@
 
 #include "../native_menu_bar.h"
 
+#define UNUSED(x) (void)(x)
+
 HWND g_hWnd = NULL;
 
 // Menu item IDs
@@ -161,6 +163,10 @@ HWND createWindow(wchar_t* title, int x, int y, int width, int height)
 
 int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE hPreviousInst, LPSTR lpszCmdLine, int nCmdShow)
 {
+    UNUSED(hCurrentInst);
+	UNUSED(hPreviousInst);
+	UNUSED(lpszCmdLine);
+
     HWND hWnd = createWindow(L"Menu Bar Example - Win32", 100, 100, 400, 300);
     if (!hWnd)
         return 1;
@@ -169,6 +175,7 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE hPreviousInst, LPSTR lpsz
     createMenuBar(hWnd);
 
     MSG msg;
+	ZeroMemory(&msg, sizeof(MSG));
     bool running = true;
     while (running)
     {

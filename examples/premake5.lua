@@ -10,6 +10,7 @@ function ExampleProject(name)
     architecture "x86_64"
     warnings "Default"
     flags "MultiProcessorCompile"
+    warnings "Extra"
 end
 
 function includeThirdPartyMacFramework(relative_path)
