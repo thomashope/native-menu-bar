@@ -116,4 +116,12 @@ ExampleProject "Win_SDL2"
 		"main_win_sdl2.cpp"
 	}
 
+ExampleProject "Win_nmb"
+
+    files {
+        "main_win_nmb.cpp",
+        "../native_menu_bar.h",
+        "../native_menu_bar.cpp",
+    }
+
 end

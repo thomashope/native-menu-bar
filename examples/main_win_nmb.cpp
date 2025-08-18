@@ -5,14 +5,40 @@
 
 #pragma comment(lib, "opengl32.lib")
 
+#include "../native_menu_bar.h"
+
+HWND g_hwnd = NULL;
+
 // Menu item IDs
-#define ID_FILE_NEW     1001
-#define ID_FILE_OPEN    1002
-#define ID_FILE_SAVE    1003
-#define ID_FILE_EXIT    1004
-#define ID_EDIT_COPY    2001
-#define ID_EDIT_PASTE   2002
-#define ID_HELP_ABOUT   3001
+nmb_Handle idFileNew;
+nmb_Handle idFileOpen;
+nmb_Handle idFileSave;
+nmb_Handle idFileExit;
+nmb_Handle idEditCopy;
+nmb_Handle idEditPaste;
+nmb_Handle idHelpAbout;
+
+void createMenuBar(HWND hWnd)
+{
+    nmb_Handle hMenuBar = nmb_setup(hWnd);
+    nmb_Handle hFileMenu = nmb_appendSubmenu(hMenuBar, "File");
+    nmb_Handle hEditMenu = nmb_appendSubmenu(hMenuBar, "Edit");
+    nmb_Handle hHelpMenu = nmb_appendSubmenu(hMenuBar, "Help");
+
+    // File menu
+    idFileNew = nmb_appendMenuItem(hFileMenu, "New");
+    idFileOpen = nmb_appendMenuItem(hFileMenu, "Open...");
+    idFileSave = nmb_appendMenuItem(hFileMenu, "Save");
+    nmb_appendSeparator(hFileMenu);
+    idFileExit = nmb_appendMenuItem(hFileMenu, "Exit");
+
+    // Edit menu
+    idEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
+    idEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
+
+    // Help menu
+    idHelpAbout = nmb_appendMenuItem(hHelpMenu, "About...");
+}
 
 void drawTriangle()
 {
@@ -28,33 +54,40 @@ void drawTriangle()
     glFlush();
 }
 
-HMENU createMenuBar()
+void handleEvents()
 {
-    HMENU hMenuBar = CreateMenu();
-    HMENU hFileMenu = CreatePopupMenu();
-    HMENU hEditMenu = CreatePopupMenu();
-    HMENU hHelpMenu = CreatePopupMenu();
-
-    // File menu
-    AppendMenu(hFileMenu, MF_STRING, ID_FILE_NEW, L"&New");
-    AppendMenu(hFileMenu, MF_STRING, ID_FILE_OPEN, L"&Open...");
-    AppendMenu(hFileMenu, MF_STRING, ID_FILE_SAVE, L"&Save");
-    AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(hFileMenu, MF_STRING, ID_FILE_EXIT, L"E&xit");
-
-    // Edit menu
-    AppendMenu(hEditMenu, MF_STRING, ID_EDIT_COPY, L"&Copy");
-    AppendMenu(hEditMenu, MF_STRING, ID_EDIT_PASTE, L"&Paste");
-
-    // Help menu
-    AppendMenu(hHelpMenu, MF_STRING, ID_HELP_ABOUT, L"&About...");
-
-    // Add popup menus to menu bar
-    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hFileMenu, L"&File");
-    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hEditMenu, L"&Edit");
-    AppendMenu(hMenuBar, MF_POPUP, (UINT_PTR)hHelpMenu, L"&Help");
-
-    return hMenuBar;
+    nmb_Event_t e;
+    while (nmb_pollEvent(&e))
+    {
+        if (e.sender == idFileNew)
+        {
+            MessageBox(g_hwnd, L"New file selected", L"Menu", MB_OK);
+        }
+        else if (e.sender == idFileOpen)
+        {
+            MessageBox(g_hwnd, L"Open file selected", L"Menu", MB_OK);
+        }
+        else if (e.sender == idFileSave)
+        {
+            MessageBox(g_hwnd, L"Save file selected", L"Menu", MB_OK);
+        }
+        else if (e.sender == idFileExit)
+        {
+            PostQuitMessage(0);
+        }
+        else if (e.sender == idEditCopy)
+        {
+            MessageBox(g_hwnd, L"Copy selected", L"Menu", MB_OK);
+        }
+        else if (e.sender == idEditPaste)
+        {
+            MessageBox(g_hwnd, L"Paste selected", L"Menu", MB_OK);
+        }
+        else if (e.sender == idHelpAbout)
+        {
+            MessageBox(g_hwnd, L"OpenGL Triangle Demo\nVersion 1.0", L"About", MB_OK);
+        }
+    }
 }
 
 LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -72,33 +105,6 @@ LONG WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
         PostMessage(hWnd, WM_PAINT, 0, 0);
-        return 0;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam))
-        {
-        case ID_FILE_NEW:
-            MessageBox(hWnd, L"New file selected", L"Menu", MB_OK);
-            break;
-        case ID_FILE_OPEN:
-            MessageBox(hWnd, L"Open file selected", L"Menu", MB_OK);
-            break;
-        case ID_FILE_SAVE:
-            MessageBox(hWnd, L"Save file selected", L"Menu", MB_OK);
-            break;
-        case ID_FILE_EXIT:
-            PostQuitMessage(0);
-            break;
-        case ID_EDIT_COPY:
-            MessageBox(hWnd, L"Copy selected", L"Menu", MB_OK);
-            break;
-        case ID_EDIT_PASTE:
-            MessageBox(hWnd, L"Paste selected", L"Menu", MB_OK);
-            break;
-        case ID_HELP_ABOUT:
-            MessageBox(hWnd, L"OpenGL Triangle Demo\nVersion 1.0", L"About", MB_OK);
-            break;
-        }
         return 0;
 
     case WM_CHAR:
@@ -159,9 +165,7 @@ HWND createOpenGLWindow(wchar_t* title, int x, int y, int width, int height, BYT
         return NULL;
     }
 
-    // Create and set the menu
-    HMENU hMenu = createMenuBar();
-    SetMenu(hWnd, hMenu);
+	g_hwnd = hWnd;
 
     hDC = GetDC(hWnd);
 
@@ -199,7 +203,7 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE hPreviousInst, LPSTR lpsz
     HWND  hWnd;				/* window */
     MSG   msg;				/* message */
 
-    hWnd = createOpenGLWindow(L"minimal", 0, 0, 256, 256, PFD_TYPE_RGBA, 0);
+    hWnd = createOpenGLWindow(L"Menu Bar Example", 0, 0, 256, 256, PFD_TYPE_RGBA, 0);
     if (hWnd == NULL)
         exit(1);
 
@@ -209,10 +213,23 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE hPreviousInst, LPSTR lpsz
 
     ShowWindow(hWnd, nCmdShow);
 
-    while (GetMessage(&msg, hWnd, 0, 0))
+    createMenuBar(hWnd);
+
+	bool running = true;
+	while (running)
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+            {
+                running = false;
+                break;
+            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+		handleEvents();
     }
 
     wglMakeCurrent(NULL, NULL);

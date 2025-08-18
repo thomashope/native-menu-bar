@@ -15,7 +15,7 @@ struct nmb_Event_t
     nmb_Handle sender;
 };
 
-nmb_Handle nmb_setup();
+nmb_Handle nmb_setup(void* windowHandle = nullptr); // TODO: we only need this on windows, what to do on mac?
 
 nmb_Handle nmb_appendSubmenu(nmb_Handle parent, const char* caption);
 

@@ -37,7 +37,7 @@ void render()
     SDL_RenderPresent(g_renderer);
 }
 
-HMENU CreateMenuBar()
+HMENU createMenuBar()
 {
     HMENU hMenuBar = CreateMenu();
     HMENU hFileMenu = CreatePopupMenu();
@@ -165,7 +165,7 @@ int InitializeSDL()
     g_originalWndProc = (WNDPROC)SetWindowLongPtr(g_hwnd, GWLP_WNDPROC, (LONG_PTR)CustomWndProc);
 
     // Create and set the menu
-    HMENU hMenu = CreateMenuBar();
+    HMENU hMenu = createMenuBar();
     SetMenu(g_hwnd, hMenu);
 
     return 1;
