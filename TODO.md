@@ -11,6 +11,7 @@ MVP Features
 
 Release Work
 
+- [x] add license
 - [ ] compile as C99 to latest C, C++98 to latest C++
 - [ ] compile on all of the above without warnings
 - [ ] make sure i'm doing cleanup and proper memory management and API and examples
