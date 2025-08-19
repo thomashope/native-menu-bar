@@ -3,92 +3,9 @@
 
 #include "../native_menu_bar.h"
 
-#define UNUSED(x) (void)(x)
+#include "common.inl"
 
 HWND g_hWnd = NULL;
-
-// Menu item IDs
-nmb_Handle g_hFileNew;
-nmb_Handle g_hFileOpen;
-nmb_Handle g_hFileSave;
-nmb_Handle g_hFileEnabler;
-nmb_Handle g_hFileEnablee;
-nmb_Handle g_hFileExit;
-nmb_Handle g_hEditCopy;
-nmb_Handle g_hEditPaste;
-nmb_Handle g_hHelpAbout;
-
-void createMenuBar(HWND hWnd)
-{
-    nmb_Handle hMenuBar = nmb_setup(hWnd);
-    nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
-    nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
-    nmb_Handle hHelpMenu = nmb_appendMenu(hMenuBar, "Help");
-
-    // File menu
-    g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");
-    g_hFileOpen = nmb_appendMenuItem(hFileMenu, "Open...");
-    g_hFileSave = nmb_appendMenuItem(hFileMenu, "Save");
-    nmb_appendMenuItem(hFileMenu, "Check Me");
-    g_hFileEnabler = nmb_appendMenuItem(hFileMenu, "Enabler");
-    g_hFileEnablee = nmb_appendMenuItem(hFileMenu, "Enablee");
-    nmb_appendSeparator(hFileMenu);
-    g_hFileExit = nmb_appendMenuItem(hFileMenu, "Exit");
-
-    // Edit menu
-    g_hEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
-    g_hEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
-
-    nmb_Handle submenu = nmb_appendMenu(hEditMenu, "Submenu");
-    nmb_appendMenuItem(submenu, "Submenu Item 1");
-
-    // Help menu
-    g_hHelpAbout = nmb_appendMenuItem(hHelpMenu, "About...");
-}
-
-void handleEvents()
-{
-    nmb_Event_t e;
-    while (nmb_pollEvent(&e))
-    {
-        if (e.sender == g_hFileNew)
-        {
-            MessageBox(g_hWnd, L"New file selected", L"Menu", MB_OK);
-        }
-        else if (e.sender == g_hFileOpen)
-        {
-            MessageBox(g_hWnd, L"Open file selected", L"Menu", MB_OK);
-        }
-        else if (e.sender == g_hFileSave)
-        {
-            MessageBox(g_hWnd, L"Save file selected", L"Menu", MB_OK);
-        }
-        else if (e.sender == g_hFileEnabler)
-        {
-            nmb_setMenuItemEnabled(g_hFileEnablee, !nmb_isMenuItemEnabled(g_hFileEnablee));
-        }
-        else if (e.sender == g_hFileExit)
-        {
-            PostQuitMessage(0);
-        }
-        else if (e.sender == g_hEditCopy)
-        {
-            MessageBox(g_hWnd, L"Copy selected", L"Menu", MB_OK);
-        }
-        else if (e.sender == g_hEditPaste)
-        {
-            MessageBox(g_hWnd, L"Paste selected", L"Menu", MB_OK);
-        }
-        else if (e.sender == g_hHelpAbout)
-        {
-            MessageBox(g_hWnd, L"Win32 Window Demo\nVersion 1.0", L"About", MB_OK);
-        }
-        else
-        {
-            nmb_setMenuItemChecked(e.sender, !nmb_isMenuItemChecked(e.sender));
-        }
-    }
-}
 
 LRESULT WINAPI WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

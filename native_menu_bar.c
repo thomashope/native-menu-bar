@@ -227,16 +227,8 @@ nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
     UNUSED(windowHandle);
     memset(&g, 0, sizeof(g));
 	g.handler = [[MenuHandler alloc]init];
-
-#if 0
-	NSMenu* mainMenu = [[NSMenu alloc]init];
-	[NSApp setMainMenu : mainMenu];
-#else
-    NSMenu* mainMenu = [NSApp mainMenu];
-#endif
-
-    NSString *appName = [[NSProcessInfo processInfo] processName];
-	return mainMenu;
+    NSMenu* menuBar = [NSApp mainMenu];
+	return menuBar;
 }
 
 bool nmb_pollEvent(nmb_Event_t* event)

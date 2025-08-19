@@ -48,6 +48,7 @@ if _TARGET_OS == "windows" then
 
         files {
             "example_win32.c",
+            "common.inl",
             "../native_menu_bar.h",
             "../native_menu_bar.c",
         }
@@ -56,7 +57,7 @@ if _TARGET_OS == "windows" then
 else
 
 
-    ExampleProject "Mac_Cocoa"
+    ExampleProject "example_cocoa"
 
         links {
             "Cocoa.framework"
@@ -64,20 +65,9 @@ else
 
         files {
             "Info.plist",
-            "main_mac_cocoa.mm"
-        }
-
-    ExampleProject "Mac_nmb_native"
-
-        links {
-            "Cocoa.framework"
-        }
-
-        files {
-            "Info.plist",
-            "main_mac_nmb_native.mm",
+            "example_cocoa.m",
             "../native_menu_bar.h",
-            "../native_menu_bar.cpp",
+            "../native_menu_bar.c",
         }
 
 
@@ -88,6 +78,7 @@ ExampleProject "example_sdl2"
 
     files {
         "example_sdl2.c",
+        "common.inl",
         "../native_menu_bar.h",
         "../native_menu_bar.c",
     }

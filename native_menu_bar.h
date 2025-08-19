@@ -27,7 +27,7 @@ typedef struct nmb_Event
 	nmb_Handle sender;
 } nmb_Event_t;
 
-nmb_Handle nmb_setup(void* windowHandle); // TODO: we only need this on windows, what to do on mac, just pass null?
+nmb_Handle nmb_setup(void* windowHandle); /* TODO: we only need this on windows, what to do on mac, just pass null? */
 
 bool nmb_pollEvent(nmb_Event_t* event);
 
