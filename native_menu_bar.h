@@ -9,6 +9,12 @@ extern "C" {
 
 typedef void* nmb_Handle;
 
+typedef enum nmb_Platform
+{
+    nmb_Platform_windows,
+    nmb_Platform_macos,
+} nmb_Platform_t;
+
 typedef enum nmb_EventType
 {
 	nmb_EventType_none,
@@ -23,13 +29,15 @@ typedef struct nmb_Event
 
 nmb_Handle nmb_setup(void* windowHandle); // TODO: we only need this on windows, what to do on mac, just pass null?
 
-nmb_Handle nmb_appendSubmenu(nmb_Handle parent, const char* caption);
+bool nmb_pollEvent(nmb_Event_t* event);
+
+nmb_Platform_t nmb_getPlatform();
+
+nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption);
 
 nmb_Handle nmb_appendMenuItem(nmb_Handle parent, const char* caption);
 
 void nmb_appendSeparator(nmb_Handle parent);
-
-bool nmb_pollEvent(nmb_Event_t* event);
 
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked);
 

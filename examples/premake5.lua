@@ -125,6 +125,5 @@ ExampleProject "example_sdl2"
         }
 
         files {
-            "Info.plist",
-            "main_mac_sdl2.mm"
+            "Info.plist"
         }

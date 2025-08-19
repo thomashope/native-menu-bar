@@ -1,13 +1,41 @@
 #include "native_menu_bar.h"
 
-#ifdef _WIN32
-
 #include <stdio.h>
+
+#define MAX_EVENTS 64
+#define UNUSED(x) (void)(x)
+
+static struct
+{
+    size_t head;
+    size_t tail;
+    nmb_Event_t data[MAX_EVENTS];
+} events;
+
+static bool getEvent(nmb_Event_t* e)
+{
+    if (events.head == events.tail) return false; /* No events available */
+    *e = events.data[events.head];
+    events.head = (events.head + 1) % MAX_EVENTS;
+    return true;
+}
+
+static void pushEvent(const nmb_Event_t* e)
+{
+    /* TODO: print a warning if the user isn't consuming events fast enough */
+    if ((events.tail + 1) % MAX_EVENTS == events.head)
+    {
+        /* Buffer is full, overwrite the oldest event */
+        events.head = (events.head + 1) % MAX_EVENTS;
+    }
+    events.data[events.tail] = *e;
+    events.tail = (events.tail + 1) % MAX_EVENTS;
+}
+
+#ifdef _WIN32
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#define MAX_EVENTS 64
 
 static_assert(sizeof(HWND) == sizeof(nmb_Handle), "Window handles must be interchangeable with void*");
 static_assert(sizeof(HMENU) == sizeof(nmb_Handle), "Menu handles must be interchangeable with void*");
@@ -18,31 +46,7 @@ static struct ctx
 	HMENU menuBar;
 	WNDPROC originalWndProc;
 	UINT nextId;
-
-	size_t eventsHead;
-	size_t eventsTail;
-	nmb_Event_t events[MAX_EVENTS];
 } g;
-
-static bool getEvent(nmb_Event_t* e)
-{
-	if (g.eventsHead == g.eventsTail) return false; // No events available
-	*e = g.events[g.eventsHead];
-	g.eventsHead = (g.eventsHead + 1) % MAX_EVENTS;
-	return true;
-}
-
-static void pushEvent(const nmb_Event_t* e)
-{
-	// TODO: print a warning if the user isn't consuming events fast enough
-	if ((g.eventsTail + 1) % MAX_EVENTS == g.eventsHead)
-	{
-		// Buffer is full, overwrite the oldest event
-		g.eventsHead = (g.eventsHead + 1) % MAX_EVENTS;
-	}
-	g.events[g.eventsTail] = *e;
-	g.eventsTail = (g.eventsTail + 1) % MAX_EVENTS;
-}
 
 static LRESULT CALLBACK menuBarWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -75,7 +79,17 @@ nmb_Handle nmb_setup(void* hWnd)
 	return g.menuBar;
 }
 
-nmb_Handle nmb_appendSubmenu(nmb_Handle parent, const char* caption)
+bool nmb_pollEvent(nmb_Event_t* event)
+{
+    return getEvent(event);
+};
+
+nmb_Platform_t nmb_getPlatform()
+{
+    return nmb_Platform_windows;
+}
+
+nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption)
 {
 	nmb_Handle submenu = CreatePopupMenu();
 	BOOL result = AppendMenuA((HMENU)parent, MF_POPUP, (UINT_PTR)submenu, caption); // TODO: pretty sure we don't need to store g.nextId, just use the handle. Right?
@@ -106,11 +120,6 @@ void nmb_appendSeparator(nmb_Handle parent)
 	AppendMenu((HMENU)parent, MF_SEPARATOR, 0, NULL);
 	DrawMenuBar(g.hwnd);
 }
-
-bool nmb_pollEvent(nmb_Event_t* event)
-{
-	return getEvent(event);
-};
 
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 {
@@ -156,24 +165,16 @@ bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 
 #else
 
-#include <vector>
-
 #import <Cocoa/Cocoa.h>
 
 @interface MenuHandler : NSObject
 - (void)handleAction : (id)sender;
 @end
 
-namespace
+static struct ctx
 {
-
-	struct Ctx
-	{
-		MenuHandler* handler = nullptr;
-		std::vector<nmb_Event_t> events;
-	} g;
-
-}
+    MenuHandler* handler;
+} g;
 
 @implementation MenuHandler
 - (void)handleAction:(id)sender
@@ -181,19 +182,74 @@ namespace
 	nmb_Event_t e;
 	e.sender = sender;
 	e.event = nmb_EventType_itemTriggered;
-	g.events.push_back(e);
+    pushEvent(&e);
 }
 @end
 
-nmb_Handle nmb_setup()
+/*
+
+ Mac features
+
+Looks like both MAC and WINDOWS give the app some menus by default.
+
+ Mac: App menu using the Bundle Name from the Info.plist + a Window menu with some stuff in it
+ Windows: A default menu when you click on the app icon.
+
+On mac you can access the App menu with [NSApp mainMenu], and presuambly modify it from there?
+On windows you can apparently use GetSystenMenu()?
+
+On mac we are likely to want to insert our custom menus after the App menu but before the Window menu, plus some after the Window menu (e.g. Help)
+
+Idea
+ appMenu = nmb_getAppMenu() // Returns the app menu on Mac, and system icon menu on windows
+ fileMenu = nmb_insertMenuAfter(appMenu, "File")
+ windowMenu = nmb_getMenu("Window");
+ if(!windowMenu)
+ {
+    windowMenu = nmb_appendMennu("window")
+    ... make the window menu
+ }
+ nmb_insertMenuAfter(windowMenu, "Help")
+
+Result
+ mac: App (default) / File / Window (default) / Help
+ windows: Icon (default) / File / Window / Help
+
+---
+
+ - If you do [NSApp setMainMenu] on mac it override the default menus
+ - mac uses the Bundle name from Info.plist for the App Menu name
+
+ */
+
+nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
 {
+    UNUSED(windowHandle);
+    memset(&g, 0, sizeof(g));
 	g.handler = [[MenuHandler alloc]init];
+
+#if 0
 	NSMenu* mainMenu = [[NSMenu alloc]init];
-	[NSApp setMainMenu : mainMenu] ;
+	[NSApp setMainMenu : mainMenu];
+#else
+    NSMenu* mainMenu = [NSApp mainMenu];
+#endif
+
+    NSString *appName = [[NSProcessInfo processInfo] processName];
 	return mainMenu;
 }
 
-nmb_Handle nmb_appendSubmenu(nmb_Handle parent, const char* caption)
+bool nmb_pollEvent(nmb_Event_t* event)
+{
+    return getEvent(event);
+};
+
+nmb_Platform_t nmb_getPlatform()
+{
+    return nmb_Platform_macos;
+}
+
+nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption)
 {
 	NSMenuItem* item = [(NSMenu*)parent addItemWithTitle : [NSString stringWithCString : caption encoding : NSUTF8StringEncoding] action : nil keyEquivalent : @""];
 	NSMenu* menu = [[NSMenu alloc]init];
@@ -212,14 +268,6 @@ void nmb_appendSeparator(nmb_Handle parent)
 {
 	[(NSMenu*)parent addItem : [NSMenuItem separatorItem] ] ;
 }
-
-bool nmb_pollEvent(nmb_Event_t* event)
-{
-	if (g.events.empty()) return false;
-	*event = g.events.front();
-	g.events.erase(g.events.begin());
-	return true;
-};
 
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 {

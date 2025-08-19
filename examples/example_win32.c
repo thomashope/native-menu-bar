@@ -21,9 +21,9 @@ nmb_Handle g_hHelpAbout;
 void createMenuBar(HWND hWnd)
 {
     nmb_Handle hMenuBar = nmb_setup(hWnd);
-    nmb_Handle hFileMenu = nmb_appendSubmenu(hMenuBar, "File");
-    nmb_Handle hEditMenu = nmb_appendSubmenu(hMenuBar, "Edit");
-    nmb_Handle hHelpMenu = nmb_appendSubmenu(hMenuBar, "Help");
+    nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
+    nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
+    nmb_Handle hHelpMenu = nmb_appendMenu(hMenuBar, "Help");
 
     // File menu
     g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");
@@ -39,7 +39,7 @@ void createMenuBar(HWND hWnd)
     g_hEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
     g_hEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
 
-    nmb_Handle submenu = nmb_appendSubmenu(hEditMenu, "Submenu");
+    nmb_Handle submenu = nmb_appendMenu(hEditMenu, "Submenu");
     nmb_appendMenuItem(submenu, "Submenu Item 1");
 
     // Help menu

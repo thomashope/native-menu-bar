@@ -15,16 +15,16 @@ void setupMenuBar()
     nmb_Handle menuBar = nmb_setup();
 
     // TODO: is the name here determined by the Info.plist ? Is there some reccomended way of setting it in code? Should the API account for this somehow?
-    nmb_Handle appMenu = nmb_appendSubmenu(menuBar, "caption ignored on mac"); // first submenu on mac always recieves the app name
+    nmb_Handle appMenu = nmb_appendMenu(menuBar, "caption ignored on mac"); // first submenu on mac always recieves the app name
     nmb_Handle aboutItem = nmb_appendMenuItem(appMenu, "About My App");
 
-    nmb_Handle fileMenu = nmb_appendSubmenu(menuBar, "File");
+    nmb_Handle fileMenu = nmb_appendMenu(menuBar, "File");
     nmb_Handle newItem = nmb_appendMenuItem(fileMenu, "New");
     nmb_appendSeparator(fileMenu);
     enabler = nmb_appendMenuItem(fileMenu, "enabler");
     enablee = nmb_appendMenuItem(fileMenu, "enablee");
 
-    nmb_Handle editMenu = nmb_appendSubmenu(menuBar, "Edit");
+    nmb_Handle editMenu = nmb_appendMenu(menuBar, "Edit");
     nmb_Handle cutItem = nmb_appendMenuItem(editMenu, "Cut");
     nmb_Handle copyItem = nmb_appendMenuItem(editMenu, "Copy");
     nmb_Handle pasteItem = nmb_appendMenuItem(editMenu, "Paste");

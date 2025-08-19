@@ -16,6 +16,8 @@ Release Work
 - [ ] cross platform SDL2 example
 - [ ] cross platform SFML example (or something else popular)
 - [ ] inline documentation in .h
+- [ ] double check the API is using typical C practice
+	(e.g. enum and type names, should I use stdbool.h or ints for returns, name conventions / case, etc.)
 
 Further Work (prioritise top to bottom)
 
@@ -27,6 +29,7 @@ Further Work (prioritise top to bottom)
 
 Extra ideas
 
+- Add the searchable help menu on mac
 - easily create the default menus expected on each platform?
 - Dear ImGui implementation
 - Linux

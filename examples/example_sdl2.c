@@ -5,7 +5,9 @@
 
 #include "../native_menu_bar.h"
 
-// Menu item IDs
+#define UNUSED(x) (void)(x)
+
+/* Menu item IDs */
 nmb_Handle g_hFileNew = 0;
 nmb_Handle g_hFileOpen = 0;
 nmb_Handle g_hFileSave = 0;
@@ -22,11 +24,11 @@ SDL_Renderer* g_renderer = NULL;
 void createMenuBar(void* nativeWindowHandle)
 {
 	nmb_Handle hMenuBar = nmb_setup(nativeWindowHandle);
-	nmb_Handle hFileMenu = nmb_appendSubmenu(hMenuBar, "File");
-	nmb_Handle hEditMenu = nmb_appendSubmenu(hMenuBar, "Edit");
-	nmb_Handle hHelpMenu = nmb_appendSubmenu(hMenuBar, "Help");
+	nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
+	nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
+	nmb_Handle hHelpMenu = nmb_appendMenu(hMenuBar, "Help");
 
-	// File menu
+	/* File menu */
 	g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");
 	g_hFileOpen = nmb_appendMenuItem(hFileMenu, "Open...");
 	g_hFileSave = nmb_appendMenuItem(hFileMenu, "Save");
@@ -36,14 +38,14 @@ void createMenuBar(void* nativeWindowHandle)
 	nmb_appendSeparator(hFileMenu);
 	g_hFileExit = nmb_appendMenuItem(hFileMenu, "Exit");
 
-	// Edit menu
+	/* Edit menu */
 	g_hEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
 	g_hEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
 
-	nmb_Handle submenu = nmb_appendSubmenu(hEditMenu, "Submenu");
+	nmb_Handle submenu = nmb_appendMenu(hEditMenu, "Submenu");
 	nmb_appendMenuItem(submenu, "Submenu Item 1");
 
-	// Help menu
+	/* Help menu */
 	g_hHelpAbout = nmb_appendMenuItem(hHelpMenu, "About...");
 }
 
@@ -95,8 +97,8 @@ void handleEvents()
 
 int main(int argc, char* argv[])
 {
-	SDL_UNUSED(argc);
-	SDL_UNUSED(argv);
+	UNUSED(argc);
+	UNUSED(argv);
 
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
