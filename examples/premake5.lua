@@ -43,7 +43,6 @@ workspace "examples"
 
 if _TARGET_OS == "windows" then
 
-
     ExampleProject "example_win32"
 
         files {
@@ -53,9 +52,7 @@ if _TARGET_OS == "windows" then
             "../native_menu_bar.c",
         }
 
-
 else
-
 
     ExampleProject "example_cocoa"
 
@@ -70,9 +67,7 @@ else
             "../native_menu_bar.c",
         }
 
-
 end
-
 
 ExampleProject "example_sdl2"
 
