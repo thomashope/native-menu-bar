@@ -13,32 +13,23 @@ function ExampleProject(name)
     warnings "Extra"
 end
 
-function includeThirdPartyMacFramework(relative_path)
-    local dir, filename = relative_path:match("^(.-)/([^/]+)$")
-    externalincludedirs { relative_path.."/Headers" }
-    frameworkdirs { dir }
-end
-
-function linkThirdPartyMacFramework(relativePath)
-    local dir, filename = relativePath:match("^(.-)/([^/]+)$")
-    frameworkdirs { dir }
-    links { relativePath }
-    embedAndSign { filename }
-end
-
-
 workspace "examples"
 
 	location ("build/".._ACTION)
     configurations { "Debug", "Release" }
 
-    filter "configurations:Debug"
+    filter { "configurations:Debug" }
         defines { "CONFIG_DEBUG" }
         symbols "On"
 
-    filter "configurations:Release"
+    filter { "configurations:Release" }
         defines { "CONFIG_RELEASE" }
         optimize "On"
+
+    filter { "files:../*.c", "action:xcode*" }
+        compileas "Objective-C" 
+
+    filter {}
 
 
 if _TARGET_OS == "windows" then
@@ -52,7 +43,7 @@ if _TARGET_OS == "windows" then
             "../native_menu_bar.c",
         }
 
-else
+else -- assume target is macos
 
     ExampleProject "example_cocoa"
 
@@ -100,14 +91,16 @@ ExampleProject "example_sdl2"
     filter "action:xcode*"
 
         links {
-            "Cocoa.framework"
+            "Cocoa.framework",
+            "SDL2"
         }
 
-        includeThirdPartyMacFramework "lib/sdl2/mac/SDL2.framework"
-        linkThirdPartyMacFramework "lib/sdl2/mac/SDL2.framework"
+        libdirs {
+            "/opt/homebrew/lib"
+        }
 
-        xcodebuildsettings {
-            ["LD_RUNPATH_SEARCH_PATHS"] = "$(inherited) @executable_path/../Frameworks", -- tell the executable where to find the frameworks. Path is relative to executable location inside .app bundle
+        externalincludedirs {
+            "/opt/homebrew/include/SDL2"
         }
 
         files {

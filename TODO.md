@@ -6,26 +6,31 @@ MVP Features
 - [x] append regular text menu items
 - [x] separator lines
 - [x] check / uncheck mark next to menu items
+- [x] enable/disable menu items
+- [x] simplified mac and windows examples
 
 Release Work
 
 - [ ] compile as C99 to latest C, C++98 to latest C++
 - [ ] compile on all of the above without warnings
 - [ ] make sure i'm doing cleanup and proper memory management and API and examples
-- [ ] simplified mac and windows examples
 - [ ] cross platform SDL2 example
-- [ ] cross platform SFML example (or something else popular)
 - [ ] inline documentation in .h
 - [ ] double check the API is using typical C practice
 	(e.g. enum and type names, should I use stdbool.h or ints for returns, name conventions / case, etc.)
 
 Further Work (prioritise top to bottom)
 
-- [ ] insert items into menus at specific place
-- [ ] delete items and entire menus/sub-menus
-- [ ] enable/disable menu items
-- [ ] Windows accelerator keys (the thing that happens when you press Alt)
 - [ ] Keyboard shortcuts (key equivalents on mac)
+- [ ] Windows accelerator keys (the thing that happens when you press Alt)
+- [ ] insert items into menus at specific place
+	insertMenuAfter(handle, "new item")
+	insertMenuItemAfter()
+	insertMenuBefore()
+	insertMenuItemBefore()
+- [ ] cross platform SFML example (or something else popular)
+- [ ] delete items and entire menus/sub-menus
+	remove(handle menu or menuItem)
 
 Extra ideas
 

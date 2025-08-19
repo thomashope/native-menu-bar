@@ -40,7 +40,7 @@ static void pushEvent(const nmb_Event_t* e)
 static_assert(sizeof(HWND) == sizeof(nmb_Handle), "Window handles must be interchangeable with void*");
 static_assert(sizeof(HMENU) == sizeof(nmb_Handle), "Menu handles must be interchangeable with void*");
 
-static struct ctx
+static struct
 {
 	HWND hwnd;
 	HMENU menuBar;
@@ -171,7 +171,7 @@ bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 - (void)handleAction : (id)sender;
 @end
 
-static struct ctx
+static struct
 {
     MenuHandler* handler;
 } g;
