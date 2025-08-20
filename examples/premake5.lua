@@ -53,6 +53,7 @@ else -- assume target is macos
 
         files {
             "Info.plist",
+            "common.inl",
             "example_cocoa.m",
             "../native_menu_bar.h",
             "../native_menu_bar.c",

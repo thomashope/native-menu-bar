@@ -15,10 +15,11 @@ Release Work
 - [ ] compile as C99 to latest C, C++98 to latest C++
 - [ ] compile on all of the above without warnings
 - [ ] make sure i'm doing cleanup and proper memory management and API and examples
-- [ ] cross platform SDL2 example
+- [x] cross platform SDL2 example
 - [ ] inline documentation in .h
 - [ ] double check the API is using typical C practice
 	(e.g. enum and type names, should I use stdbool.h or ints for returns, name conventions / case, etc.)
+- [ ] decide on text encoding (UTF8 everywhere?) and implement
 
 Further Work (prioritise top to bottom)
 
@@ -48,6 +49,7 @@ API
 ## Resources
 
 - MacOS menu docs https://developer.apple.com/documentation/appkit/nsmenu?language=objc
+- Apple HIG on menus https://developer.apple.com/design/human-interface-guidelines/the-menu-bar
 - Win32 menu docs https://learn.microsoft.com/en-us/windows/win32/menurc/about-menus
 	- `AppendMenu` and `InsertMenu` functions are still supported, but `InsertMenuItem` should be used for new applications.
 - Sublime Text's cross platform menu definition format https://www.sublimetext.com/docs/menus.html

@@ -174,6 +174,7 @@ bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 static struct
 {
     MenuHandler* handler;
+    NSMenu* mainMenu; /* AKA the menu bar */
 } g;
 
 @implementation MenuHandler
@@ -222,13 +223,74 @@ Result
 
  */
 
+static NSString* getApplicationName()
+{
+    NSString *appName = nil;
+
+    // check the plist
+    if (!appName)
+    {
+        appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    }
+
+    if (!appName)
+    {
+        appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+    }
+
+    // failing that, use the process name
+    if (!appName || [appName length] == 0)
+    {
+        appName = [[NSProcessInfo processInfo] processName];
+    }
+
+    return appName;
+}
+
+void createDefaultMenus()
+{
+    if (NSApp == nil)
+        return;
+
+    /* Create the app menu */
+    NSString* appName = getApplicationName();
+    NSMenu* appMenu = [[NSMenu alloc] initWithTitle:@""];
+
+    /* Add some minimal default menu items (the HIG actually want us to add quite a few more) */
+    [appMenu addItemWithTitle:[@"About " stringByAppendingString:appName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    [appMenu addItemWithTitle:[@"Quit " stringByAppendingString:appName] action:@selector(terminate:) keyEquivalent:@"q"];
+
+    /* Attach it the app */
+    NSMenuItem* appMenuItem = [[NSMenuItem alloc] init];
+    [appMenuItem setSubmenu:appMenu];
+    [[NSApp mainMenu] addItem:appMenuItem];
+}
+
 nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
 {
     UNUSED(windowHandle);
     memset(&g, 0, sizeof(g));
 	g.handler = [[MenuHandler alloc]init];
-    NSMenu* menuBar = [NSApp mainMenu];
-	return menuBar;
+
+    /* Check if someone else (e.g. SDL) already built the app menu */
+    NSInteger numItemsInAppleMenu = [[[[NSApp mainMenu] itemAtIndex:0] submenu] numberOfItems];
+    bool addDefaultMenuItems = numItemsInAppleMenu == 0;
+
+    /* If not, add some default menu items */
+    if(addDefaultMenuItems)
+    {
+        /* To add a custom app menu, we have to create our own main menu (aka menu bar) */
+        g.mainMenu = [[NSMenu alloc] init];
+        [NSApp setMainMenu:g.mainMenu];
+        createDefaultMenus();
+    }
+    else
+    {
+        g.mainMenu = [NSApp mainMenu];
+    }
+
+    return g.mainMenu;
 }
 
 bool nmb_pollEvent(nmb_Event_t* event)

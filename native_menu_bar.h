@@ -27,7 +27,8 @@ typedef struct nmb_Event
 	nmb_Handle sender;
 } nmb_Event_t;
 
-nmb_Handle nmb_setup(void* windowHandle); /* TODO: we only need this on windows, what to do on mac, just pass null? */
+/* On Windows you should pass the HWND of your main window. On macOS you should pass NULL. */
+nmb_Handle nmb_setup(void* windowHandle);
 
 bool nmb_pollEvent(nmb_Event_t* event);
 
