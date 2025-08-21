@@ -80,7 +80,7 @@ static WCHAR* utf8ToWide(const char* utf8)
 	return g.wcharBuffer;
 }
 
-nmb_Handle nmb_setup(void* hWnd)
+void nmb_setup(void* hWnd)
 {
 	memset(&g, 0, sizeof(g));
 	errorBuffer[0] = 0;
@@ -96,7 +96,13 @@ nmb_Handle nmb_setup(void* hWnd)
 	{
 		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to draw menu bar on window: %lu\n", GetLastError());
 	}
-	return g.menuBar;
+}
+
+void nmb_shutdown(void)
+{
+	SetWindowLongPtr(g.hwnd, GWLP_WNDPROC, (LONG_PTR)g.originalWndProc); /* restore the old wndproc */
+	DestroyMenu(g.menuBar);
+	memset(&g, 0, sizeof(g));
 }
 
 bool nmb_pollEvent(nmb_Event* event)
@@ -272,7 +278,8 @@ static struct
 
 Looks like both MAC and WINDOWS give the app some menus by default.
 
- Mac: App menu using the Bundle Name from the Info.plist + a Window menu with some stuff in it
+ Mac: Doesn't create the default menus for your, but the HIG described some minimum expected menus.
+ Mac SDL: SDL creates an App menu using the Bundle Name from the Info.plist + a Window menu with some stuff in it
  Windows: A default menu when you click on the app icon.
 
 On mac you can access the App menu with [NSApp mainMenu], and presuambly modify it from there?
@@ -294,11 +301,6 @@ Idea
 Result
  mac: App (default) / File / Window (default) / Help
  windows: Icon (default) / File / Window / Help
-
----
-
- - If you do [NSApp setMainMenu] on mac it override the default menus
- - mac uses the Bundle name from Info.plist for the App Menu name
 
  */
 
@@ -384,7 +386,7 @@ void nmb_setup(void* windowHandle /* unused on mac */)
 void nmb_shutdown()
 {
     [g.handler release];
-    g.handler = nil;
+	memset(&g, 0, sizeof(g));
 }
 
 bool nmb_pollEvent(nmb_Event* event)
