@@ -45,6 +45,8 @@ const char* nmb_getLastError(void)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#define CAPTION_BUFFER_SIZE 256
+
 static_assert(sizeof(HWND) == sizeof(nmb_Handle), "Window handles must be interchangeable with void*");
 static_assert(sizeof(HMENU) == sizeof(nmb_Handle), "Menu handles must be interchangeable with void*");
 
@@ -54,6 +56,7 @@ static struct
 	HMENU menuBar;
 	WNDPROC originalWndProc;
 	UINT nextId;
+	WCHAR wcharBuffer[CAPTION_BUFFER_SIZE];
 } g;
 
 static LRESULT CALLBACK menuBarWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -68,6 +71,13 @@ static LRESULT CALLBACK menuBarWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	}
 
 	return CallWindowProc(g.originalWndProc, hWnd, uMsg, wParam, lParam);
+}
+
+static WCHAR* utf8ToWide(const char* utf8)
+{
+	if (!utf8) return NULL;
+	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, g.wcharBuffer, CAPTION_BUFFER_SIZE);
+	return g.wcharBuffer;
 }
 
 nmb_Handle nmb_setup(void* hWnd)
@@ -119,7 +129,7 @@ nmb_Handle nmb_insertMenu(nmb_Handle parent, int index, const char* caption)
 	}
 
 	nmb_Handle submenu = CreatePopupMenu();
-	BOOL result = InsertMenuA((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_POPUP, (UINT_PTR)submenu, caption);
+	BOOL result = InsertMenuW((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_POPUP, (UINT_PTR)submenu, utf8ToWide(caption));
 	if (!result)
 	{
 		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to insert submenu '%s'. Windows error %lu\n", caption, GetLastError());
@@ -150,7 +160,7 @@ nmb_Handle nmb_insertMenuItem(nmb_Handle parent, int index, const char* caption)
 	}
 
 	UINT id = g.nextId++;
-	BOOL result = InsertMenuA((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_STRING, id, caption);
+	BOOL result = InsertMenuW((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_STRING, id, utf8ToWide(caption));
 	if (!result)
 	{
 		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to insert menu item '%s'. Windows error %lu\n", caption, GetLastError());
