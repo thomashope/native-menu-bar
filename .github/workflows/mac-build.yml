@@ -1,0 +1,20 @@
+name: Mac Build
+on:
+  push:
+    branches: [ '**' ]  # Trigger on push to any branch
+    tags: [ '**' ]      # Trigger on push of any tag
+
+jobs:
+  build:
+    runs-on: macos-latest
+    environment: default
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile Test
+        shell: cmd
+        run: |
+          cd test
+          ./test.sh

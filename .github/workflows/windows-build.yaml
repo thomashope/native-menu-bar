@@ -1,0 +1,19 @@
+name: Windows Build
+on:
+  push:
+    branches: [ '**' ]  # Trigger on push to any branch
+    tags: [ '**' ]      # Trigger on push of any tag
+
+jobs:
+  build:
+    runs-on: windows-latest
+    environment: default
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile Test
+        run: |
+          cd test
+          test
