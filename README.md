@@ -2,7 +2,7 @@
 
 [![Mac Build](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml) [![Windows Build](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml)
 
-![mac screenshot](./screenshots/mac.png)![windows screenshot] (./screenshots/windows.png)
+![mac screenshot](./screenshots/mac.png) ![windows screenshot](./screenshots/windows.png)
 
 Native Menu Bar provides a single API for adding a native menu bar to your application that works on Windows and Mac.
 
