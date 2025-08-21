@@ -14,7 +14,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Compile Test
-        shell: cmd
         run: |
           cd test
           ./test.sh
