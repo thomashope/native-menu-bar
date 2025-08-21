@@ -1,10 +1,10 @@
 #ifndef NATIVE_MENU_BAR_H
 #define NATIVE_MENU_BAR_H
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
-#else
-#include <stdbool.h>
 #endif
 
 typedef void* nmb_Handle;
@@ -13,26 +13,26 @@ typedef enum nmb_Platform
 {
     nmb_Platform_windows,
     nmb_Platform_macos
-} nmb_Platform_t;
+} nmb_Platform;
 
 typedef enum nmb_EventType
 {
 	nmb_EventType_none,
 	nmb_EventType_itemTriggered
-} nmb_EventType_t;
+} nmb_EventType;
 
 typedef struct nmb_Event
 {
-	nmb_EventType_t event;
+	nmb_EventType event;
 	nmb_Handle sender;
-} nmb_Event_t;
+} nmb_Event;
 
 /* On Windows you should pass the HWND of your main window. On macOS you should pass NULL. */
 nmb_Handle nmb_setup(void* windowHandle);
 
-bool nmb_pollEvent(nmb_Event_t* event);
+bool nmb_pollEvent(nmb_Event* event);
 
-nmb_Platform_t nmb_getPlatform(void);
+nmb_Platform nmb_getPlatform(void);
 
 nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption);
 

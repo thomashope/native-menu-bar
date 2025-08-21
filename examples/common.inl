@@ -42,7 +42,7 @@ void createMenuBar(void* nativeWindowHandle)
 
 void handleEvents()
 {
-	nmb_Event_t e;
+	nmb_Event e;
 	while (nmb_pollEvent(&e))
 	{
 		if (e.sender == g_hFileNew)

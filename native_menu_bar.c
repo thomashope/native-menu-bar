@@ -9,10 +9,10 @@ static struct
 {
     size_t head;
     size_t tail;
-    nmb_Event_t data[MAX_EVENTS];
+    nmb_Event data[MAX_EVENTS];
 } events;
 
-static bool getEvent(nmb_Event_t* e)
+static bool getEvent(nmb_Event* e)
 {
     if (events.head == events.tail) return false; /* No events available */
     *e = events.data[events.head];
@@ -20,7 +20,7 @@ static bool getEvent(nmb_Event_t* e)
     return true;
 }
 
-static void pushEvent(const nmb_Event_t* e)
+static void pushEvent(const nmb_Event* e)
 {
     /* TODO: print a warning if the user isn't consuming events fast enough */
     if ((events.tail + 1) % MAX_EVENTS == events.head)
@@ -52,7 +52,7 @@ static LRESULT CALLBACK menuBarWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 {
 	if (uMsg == WM_COMMAND)
 	{
-		nmb_Event_t e;
+		nmb_Event e;
 		e.sender = (nmb_Handle)(uintptr_t)(LOWORD(wParam));
 		e.event = nmb_EventType_itemTriggered;
 		pushEvent(&e);
@@ -79,12 +79,12 @@ nmb_Handle nmb_setup(void* hWnd)
 	return g.menuBar;
 }
 
-bool nmb_pollEvent(nmb_Event_t* event)
+bool nmb_pollEvent(nmb_Event* event)
 {
     return getEvent(event);
 };
 
-nmb_Platform_t nmb_getPlatform()
+nmb_Platform nmb_getPlatform()
 {
     return nmb_Platform_windows;
 }
@@ -180,7 +180,7 @@ static struct
 @implementation MenuHandler
 - (void)handleAction:(id)sender
 {
-	nmb_Event_t e;
+	nmb_Event e;
 	e.sender = sender;
 	e.event = nmb_EventType_itemTriggered;
     pushEvent(&e);
@@ -293,12 +293,12 @@ nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
     return g.mainMenu;
 }
 
-bool nmb_pollEvent(nmb_Event_t* event)
+bool nmb_pollEvent(nmb_Event* event)
 {
     return getEvent(event);
 }
 
-nmb_Platform_t nmb_getPlatform(void)
+nmb_Platform nmb_getPlatform(void)
 {
     return nmb_Platform_macos;
 }
