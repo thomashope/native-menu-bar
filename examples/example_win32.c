@@ -110,6 +110,7 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE hPreviousInst, LPSTR lpsz
         handleEvents();
     }
 
+    nmb_shutdown();
     DestroyWindow(hWnd);
     return (int)msg.wParam;
 }

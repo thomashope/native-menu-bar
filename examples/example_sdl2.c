@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 		SDL_Delay(16); // ~60 FPS
 	}
 
+	nmb_shutdown();
 	SDL_DestroyRenderer(g_renderer);
 	SDL_DestroyWindow(g_window);
 	SDL_Quit();

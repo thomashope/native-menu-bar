@@ -13,6 +13,8 @@ features:
 * Toggleable checkmark on individual menu items
 * Enable and disable individual menu items
 
+Please note that this library is not thread safe on any platform. You should not attempt to call any API functions from different threads at the same time.
+
 ## Building
 
 In general you can use this library by simply adding `native_menu_bar.h` and `native_menu_bar.c` to your project.

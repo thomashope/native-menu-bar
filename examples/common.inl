@@ -16,9 +16,9 @@ void createMenuBar(void* nativeWindowHandle)
 {
     nmb_setup(nativeWindowHandle);
     
-    nmb_Handle hFileMenu = nmb_appendMenu(NULL, "File");
     nmb_Handle hEditMenu = nmb_appendMenu(NULL, "Edit");
     nmb_Handle hHelpMenu = nmb_appendMenu(NULL, "Help öäĂĹŸ");
+    nmb_Handle hFileMenu = nmb_insertMenu(NULL, 0, "File"); /* example inserting at a specific position in the menu bar */
 
     /* File menu */
     g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");

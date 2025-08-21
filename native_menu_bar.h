@@ -2,80 +2,11 @@
 #define NATIVE_MENU_BAR_H
 
 /*
-
 	Native Menu Bar - A simple cross-platform C library for adding native menu bars to your game or app.
 
-EXAMPLE USAGE
+	For an explanation of how to use it, see function comments and example usage at end of file.
 
-	in your app setup function:
-
-		// Initialise the Native Menu Bar
-
-		if(nmb_getPlatform() == nmb_Platform_windows)
-		{
-			nmb_setup(hWnd); // On Wondows, pass the HWND of your main window
-		}
-		else if(nmb_getPlatform() == nmb_Platform_macos)
-		{
-			nmb_setup(NULL); // Pass NULL on macOS
-		}
-
-		// build your menu bar
-
-		nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
-		nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
-
-		g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");
-		g_hFileOpen = nmb_appendMenuItem(hFileMenu, "Open...");
-		g_hFileSave = nmb_appendMenuItem(hFileMenu, "Save");
-		
-		if(nmb_getPlatform() == nmb_Platform_windows)
-		{
-			nmb_appendSeparator(hFileMenu);
-			g_hFileExit = nmb_appendMenuItem(hFileMenu, "Exit");
-		}
-
-		g_hEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
-		g_hEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
-
-	In your frame loop:
-
-		bool running = true;
-		while(running)
-		{
-			// Respond to menu events
-			nmb_Event e;
-			while (nmb_pollEvent(&e))
-			{
-				if (e.sender == g_hFileNew)
-				{
-					printf("New file selected\n");
-				}
-				else if (e.sender == g_hFileOpen)
-				{
-					printf("Open file selected\n");
-				}
-				else if (e.sender == g_hFileSave)
-				{
-					printf("Save file selected\n");
-				}
-				else if (e.sender == g_hFileExit)
-				{
-					running = false; // Exit the app
-				}
-				else if (e.sender == g_hEditCopy)
-				{
-					printf("Copy selected\n");
-				}
-				else if (e.sender == g_hEditPaste)
-				{
-					printf("Paste selected\n");
-				}
-			}
-
-
-			// ... your code ...
-		}
+	This project is released into the public domain under the terms of the UNLICENSE.
 */
 
 #include <stdbool.h>
@@ -109,6 +40,9 @@ typedef struct nmb_Event
 * @param windowHandle On Windows you should pass the HWND of your main window. On macOS you should pass NULL.
 */
 void nmb_setup(void* windowHandle);
+
+/** Call once at the end of your application life cycle to clean up. */
+void nmb_shutdown();
 
 /** Every frame (or other regular interval) call this function in a loop to retrieve events sent by menus and respond to them. Once it returns false, all current events have been processed.
 *
@@ -181,5 +115,82 @@ const char* nmb_getLastError(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif
+
+#if 0 /* EXAMPLE USAGE */
+
+/* in your app setup function: */
+
+// Initialise the Native Menu Bar
+
+if (nmb_getPlatform() == nmb_Platform_windows)
+{
+	nmb_setup(hWnd); // On Wondows, pass the HWND of your main window
+}
+else if (nmb_getPlatform() == nmb_Platform_macos)
+{
+	nmb_setup(NULL); // Pass NULL on macOS
+}
+
+// build your menu bar
+
+nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
+nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
+
+g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");
+g_hFileOpen = nmb_appendMenuItem(hFileMenu, "Open...");
+g_hFileSave = nmb_appendMenuItem(hFileMenu, "Save");
+
+if (nmb_getPlatform() == nmb_Platform_windows)
+{
+	nmb_appendSeparator(hFileMenu);
+	g_hFileExit = nmb_appendMenuItem(hFileMenu, "Exit");
+}
+
+g_hEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
+g_hEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
+
+/* In your frame loop: */
+
+bool running = true;
+while (running)
+{
+	// Respond to menu events
+	nmb_Event e;
+	while (nmb_pollEvent(&e))
+	{
+		if (e.sender == g_hFileNew)
+		{
+			printf("New file selected\n");
+		}
+		else if (e.sender == g_hFileOpen)
+		{
+			printf("Open file selected\n");
+		}
+		else if (e.sender == g_hFileSave)
+		{
+			printf("Save file selected\n");
+		}
+		else if (e.sender == g_hFileExit)
+		{
+			running = false; // Exit the app
+		}
+		else if (e.sender == g_hEditCopy)
+		{
+			printf("Copy selected\n");
+		}
+		else if (e.sender == g_hEditPaste)
+		{
+			printf("Paste selected\n");
+		}
+	}
+
+
+	// ... your code ...
+}
+
+// cleanup
+nmb_shutdown();
 
 #endif
