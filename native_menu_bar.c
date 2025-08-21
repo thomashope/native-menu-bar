@@ -111,7 +111,7 @@ nmb_Platform nmb_getPlatform()
 
 nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption)
 {
-	nmb_insertMenu(parent, -1, caption);
+	return nmb_insertMenu(parent, -1, caption);
 }
 
 /* TODO: allow passing negative indices to insert from the end of the menu */
@@ -180,13 +180,13 @@ void nmb_insertSeparator(nmb_Handle parent, int index)
 	if (index < -1)
 	{
 		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Invalid index '%d' passed to '%s'\n", index, __func__);
-		return NULL;
+		return;
 	}
 
 	if (!parent)
 	{
 		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to create separator because parent was NULL\n");
-		return NULL;
+		return;
 	}
 
 	InsertMenu((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
@@ -195,7 +195,7 @@ void nmb_insertSeparator(nmb_Handle parent, int index)
 
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 {
-	if (!menuItem) return NULL;
+	if (!menuItem) return;
 
 	UINT flags = MF_BYCOMMAND | (checked ? MF_CHECKED : MF_UNCHECKED);
 	CheckMenuItem(GetMenu(g.hwnd), (UINT)(uintptr_t)menuItem, flags);
@@ -204,7 +204,7 @@ void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 
 bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 {
-	if (!menuItem) return NULL;
+	if (!menuItem) return false;
 
 	UINT state = GetMenuState(g.menuBar, (UINT)(uintptr_t)menuItem, MF_BYCOMMAND);
 	if (state == (UINT)-1)
@@ -218,7 +218,7 @@ bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 
 void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 {
-	if (!menuItem) return NULL;
+	if (!menuItem) return;
 
 	UINT flags = MF_BYCOMMAND | (enabled ? MF_ENABLED : MF_GRAYED);
 	BOOL result = EnableMenuItem(g.menuBar, (UINT)(uintptr_t)menuItem, flags);
@@ -232,7 +232,7 @@ void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 
 bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 {
-	if (!menuItem) return NULL;
+	if (!menuItem) return false;
 
 	UINT state = GetMenuState(g.menuBar, (UINT)(uintptr_t)menuItem, MF_BYCOMMAND);
 	if (state == (UINT)-1)

@@ -11,6 +11,7 @@ function ExampleProject(name)
     warnings "Default"
     flags "MultiProcessorCompile"
     warnings "Extra"
+    fatalwarnings "All"
 end
 
 workspace "examples"
