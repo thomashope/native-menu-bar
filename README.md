@@ -4,16 +4,18 @@
 
 ![mac screenshot](./screenshots/mac.png)![windows screenshot] (./screenshots/windows.png)
 
-Native Menu Bar provides a single API for adding a native menu bar to your application that works on Windows and Mac.
+Native Menu Bar is a C API for adding menus to your application using native UI on Windows and Mac.
 
-User interaction produces events which are forwarded to your application where they can be responded to using the same code on all platforms.
+User interaction is forwarded to your application as events which can be responded to using the same code on all platforms.
 
-features:
+Features:
 
 * Menu bar with menus and submenus
 * Clickable menu items
-* Toggleable checkmark on individual menu items
-* Enable and disable individual menu items
+* Toggleable checkmark on menu items
+* Enable and disable (grey out) menu items
+* Only 2 files for easy integration, .h and .c
+* Compiles cleanly on MSVC and clang
 
 Please note that this library is not thread safe on any platform. You should not attempt to call any API functions from different threads at the same time.
 
