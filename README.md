@@ -1,3 +1,6 @@
+
+[![Mac Build](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml) [![Windows Build](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml)
+
 ## Building
 
 In general you can use this library by simply adding `native_menu_bar.h` and `native_menu_bar.c` to your project.
