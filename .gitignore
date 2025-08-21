@@ -3,3 +3,5 @@
 /examples/bin/
 a.out
 *.o
+*.exe
+*.obj
