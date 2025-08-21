@@ -3,7 +3,10 @@
 #include <stdio.h>
 
 #define MAX_EVENTS 64
+#define ERROR_BUFFER_SIZE 128
 #define UNUSED(x) (void)(x)
+
+static char errorBuffer[ERROR_BUFFER_SIZE];
 
 static struct
 {
@@ -30,6 +33,11 @@ static void pushEvent(const nmb_Event* e)
     }
     events.data[events.tail] = *e;
     events.tail = (events.tail + 1) % MAX_EVENTS;
+}
+
+const char* nmb_getLastError(void)
+{
+	return errorBuffer;
 }
 
 #ifdef _WIN32
@@ -65,16 +73,18 @@ static LRESULT CALLBACK menuBarWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 nmb_Handle nmb_setup(void* hWnd)
 {
 	memset(&g, 0, sizeof(g));
+	errorBuffer[0] = 0;
+	g.nextId = 1;
 	g.hwnd = (HWND)hWnd;
 	g.originalWndProc = (WNDPROC)SetWindowLongPtr(g.hwnd, GWLP_WNDPROC, (LONG_PTR)menuBarWndProc);
 	g.menuBar = CreateMenu();
 	if (!SetMenu(g.hwnd, g.menuBar))
 	{
-		printf("Failed to set menu on window: %lu\n", GetLastError());
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to set menu on window: %lu\n", GetLastError());
 	}
 	if (!DrawMenuBar(g.hwnd))
 	{
-		printf("Failed to draw menu bar on window: %lu\n", GetLastError());
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to draw menu bar on window: %lu\n", GetLastError());
 	}
 	return g.menuBar;
 }
@@ -91,11 +101,28 @@ nmb_Platform nmb_getPlatform()
 
 nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption)
 {
+	nmb_insertMenu(parent, -1, caption);
+}
+
+/* TODO: allow passing negative indices to insert from the end of the menu */
+nmb_Handle nmb_insertMenu(nmb_Handle parent, int index, const char* caption)
+{
+	if (index < -1)
+	{
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Invalid index '%d' passed to '%s'\n", index, __func__);
+		return NULL;
+	}
+
+	if (!parent)
+	{
+		parent = g.menuBar;
+	}
+
 	nmb_Handle submenu = CreatePopupMenu();
-	BOOL result = AppendMenuA((HMENU)parent, MF_POPUP, (UINT_PTR)submenu, caption); // TODO: pretty sure we don't need to store g.nextId, just use the handle. Right?
+	BOOL result = InsertMenuA((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_POPUP, (UINT_PTR)submenu, caption);
 	if (!result)
 	{
-		printf("Failed to append submenu '%s': %lu\n", caption, GetLastError());
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to insert submenu '%s'. Windows error %lu\n", caption, GetLastError());
 		return NULL;
 	}
 	DrawMenuBar(g.hwnd);
@@ -104,11 +131,29 @@ nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption)
 
 nmb_Handle nmb_appendMenuItem(nmb_Handle parent, const char* caption)
 {
+	return nmb_insertMenuItem(parent, -1, caption);
+}
+
+/* TODO: allow passing negative indices to insert from the end of the menu */
+nmb_Handle nmb_insertMenuItem(nmb_Handle parent, int index, const char* caption)
+{
+	if (index < -1)
+	{
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Invalid index '%d' passed to '%s'\n", index, __func__);
+		return NULL;
+	}
+
+	if (!parent)
+	{
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to create menu item because parent was NULL\n");
+		return NULL;
+	}
+
 	UINT id = g.nextId++;
-	BOOL result = AppendMenuA((HMENU)parent, MF_STRING, id, caption);
+	BOOL result = InsertMenuA((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_STRING, id, caption);
 	if (!result)
 	{
-		printf("Failed to append submenu '%s': %lu\n", caption, GetLastError());
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to insert menu item '%s'. Windows error %lu\n", caption, GetLastError());
 		return NULL;
 	}
 	DrawMenuBar(g.hwnd);
@@ -117,12 +162,31 @@ nmb_Handle nmb_appendMenuItem(nmb_Handle parent, const char* caption)
 
 void nmb_appendSeparator(nmb_Handle parent)
 {
-	AppendMenu((HMENU)parent, MF_SEPARATOR, 0, NULL);
+	nmb_insertSeparator(parent, -1);
+}
+
+void nmb_insertSeparator(nmb_Handle parent, int index)
+{
+	if (index < -1)
+	{
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Invalid index '%d' passed to '%s'\n", index, __func__);
+		return NULL;
+	}
+
+	if (!parent)
+	{
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to create separator because parent was NULL\n");
+		return NULL;
+	}
+
+	InsertMenu((HMENU)parent, (UINT)index, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
 	DrawMenuBar(g.hwnd);
 }
 
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 {
+	if (!menuItem) return NULL;
+
 	UINT flags = MF_BYCOMMAND | (checked ? MF_CHECKED : MF_UNCHECKED);
 	CheckMenuItem(GetMenu(g.hwnd), (UINT)(uintptr_t)menuItem, flags);
 	DrawMenuBar(g.hwnd);
@@ -130,10 +194,12 @@ void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
 
 bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 {
+	if (!menuItem) return NULL;
+
 	UINT state = GetMenuState(g.menuBar, (UINT)(uintptr_t)menuItem, MF_BYCOMMAND);
 	if (state == (UINT)-1)
 	{
-		printf("Failed to get menu item state: %lu\n", GetLastError());
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to get menu item state: %lu\n", GetLastError());
 		return false;
 	}
 	return (state & MF_CHECKED) == MF_CHECKED;
@@ -142,11 +208,13 @@ bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 
 void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 {
+	if (!menuItem) return NULL;
+
 	UINT flags = MF_BYCOMMAND | (enabled ? MF_ENABLED : MF_GRAYED);
 	BOOL result = EnableMenuItem(g.menuBar, (UINT)(uintptr_t)menuItem, flags);
 	if (result == -1)
 	{
-		printf("Failed to set menu item enabled state: %lu\n", GetLastError());
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to set menu item enabled state: %lu\n", GetLastError());
 		return;
 	}
 	DrawMenuBar(g.hwnd);
@@ -154,10 +222,12 @@ void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 
 bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 {
+	if (!menuItem) return NULL;
+
 	UINT state = GetMenuState(g.menuBar, (UINT)(uintptr_t)menuItem, MF_BYCOMMAND);
 	if (state == (UINT)-1)
 	{
-		printf("Failed to get menu item state: %lu\n", GetLastError());
+		snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to get menu item state: %lu\n", GetLastError());
 		return false;
 	}
 	return (state & MF_GRAYED) != MF_GRAYED;
@@ -271,6 +341,7 @@ nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
 {
     UNUSED(windowHandle);
     memset(&g, 0, sizeof(g));
+	errorBuffer[0] = 0;
 	g.handler = [[MenuHandler alloc]init];
 
     /* Check if someone else (e.g. SDL) already built the app menu */

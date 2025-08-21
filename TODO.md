@@ -16,7 +16,7 @@ Release Work
 - [x] compile on all of the above without warnings on windows and mac
 - [ ] make sure i'm doing cleanup and proper memory management and API and examples
 - [x] cross platform SDL2 example
-- [ ] inline documentation in .h
+- [x] inline documentation in .h
 - [x] double check the API is using typical C practice
 	(e.g. enum and type names, should I use stdbool.h or ints for returns, name conventions / case, etc.)
 - [ ] decide on text encoding (UTF8 everywhere?) and implement
@@ -52,6 +52,7 @@ API
 - Apple HIG on menus https://developer.apple.com/design/human-interface-guidelines/the-menu-bar
 - Win32 menu docs https://learn.microsoft.com/en-us/windows/win32/menurc/about-menus
 	- `AppendMenu` and `InsertMenu` functions are still supported, but `InsertMenuItem` should be used for new applications.
+- Windows and UTF-8 https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
 - Sublime Text's cross platform menu definition format https://www.sublimetext.com/docs/menus.html
 	- caption: The text of the menu entry.
 	- mnemonic: The character to use as the key to press to activate the entry. Only applies to Windows and Linux. Must match the case of the character in the "caption".

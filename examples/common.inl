@@ -1,4 +1,4 @@
-#include "../native_menu_bar.h"
+﻿#include "../native_menu_bar.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -18,7 +18,7 @@ void createMenuBar(void* nativeWindowHandle)
     
 	nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
 	nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
-	nmb_Handle hHelpMenu = nmb_appendMenu(hMenuBar, "Help");
+	nmb_Handle hHelpMenu = nmb_appendMenu(NULL, "Help öäĂĹŸ");
 
 	/* File menu */
 	g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");
@@ -33,8 +33,16 @@ void createMenuBar(void* nativeWindowHandle)
 	g_hEditCopy = nmb_appendMenuItem(hEditMenu, "Copy");
 	g_hEditPaste = nmb_appendMenuItem(hEditMenu, "Paste");
 
-	nmb_Handle submenu = nmb_appendMenu(hEditMenu, "Submenu");
-	nmb_appendMenuItem(submenu, "Submenu Item 1");
+	nmb_Handle submenu1 = nmb_insertMenu(hFileMenu, 1, "Inserted Submenu");
+	nmb_appendMenuItem(submenu1, "Item 1");
+	nmb_appendMenuItem(submenu1, "Item 2");
+	nmb_appendMenuItem(submenu1, "Item 3");
+	nmb_insertMenuItem(submenu1, 1, "Inserted Menu");
+	nmb_insertSeparator(hFileMenu, 2);
+	nmb_insertSeparator(hFileMenu, 1);
+
+	nmb_Handle submenu2 = nmb_appendMenu(hEditMenu, "Submenu");
+	nmb_appendMenuItem(submenu2, "Submenu Item 1");
 
 	/* Help menu */
 	g_hHelpAbout = nmb_appendMenuItem(hHelpMenu, "About...");
