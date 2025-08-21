@@ -1,3 +1,4 @@
+# Native Menu Bar
 
 [![Mac Build](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml) [![Windows Build](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml)
 
@@ -29,3 +30,7 @@ cd examples
 ./premake vs2022
 start ./build/vs2022/examples.sln
 ```
+
+## Contributing
+
+Contributions are welcome. See [TODO](TODO.md) for things to work on and notes about current progress.
