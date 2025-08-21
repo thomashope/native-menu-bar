@@ -347,6 +347,16 @@ static void createDefaultMenus(void)
     [[NSApp mainMenu] addItem:appMenuItem];
 }
 
+static NSInteger adjustIndex(NSMenu* parent, int index)
+{
+    if(index < 0)
+    {
+        NSInteger numberOfItems = [(NSMenu*)parent numberOfItems];
+        return numberOfItems + index + 1;
+    }
+    return index;
+}
+
 nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
 {
     UNUSED(windowHandle);
@@ -386,22 +396,78 @@ nmb_Platform nmb_getPlatform(void)
 
 nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption)
 {
-	NSMenuItem* item = [(NSMenu*)parent addItemWithTitle : [NSString stringWithCString : caption encoding : NSUTF8StringEncoding] action : nil keyEquivalent : @""];
+    return nmb_insertMenu(parent, -1, caption);
+}
+
+nmb_Handle nmb_insertMenu(nmb_Handle parent, int inputIndex, const char* caption)
+{
+    if(!parent)
+    {
+        parent = g.mainMenu;
+    }
+
+    NSInteger index = adjustIndex(parent, inputIndex);
+
+    if (index < 0)
+    {
+        snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Invalid index '%ld' passed to '%s'\n", index, __func__);
+        return NULL;
+    }
+
+	NSMenuItem* item = [(NSMenu*)parent insertItemWithTitle:[NSString stringWithCString:caption encoding:NSUTF8StringEncoding] action:nil keyEquivalent:@"" atIndex:index];
 	NSMenu* menu = [[NSMenu alloc]init];
-	[item setSubmenu : menu] ;
+	[item setSubmenu:menu];
 	return menu;
 }
 
 nmb_Handle nmb_appendMenuItem(nmb_Handle parent, const char* caption)
 {
-	NSMenuItem* item = [(NSMenu*)parent addItemWithTitle : [NSString stringWithCString : caption encoding : NSUTF8StringEncoding] action : @selector(handleAction:) keyEquivalent:@""];
-	[item setTarget : g.handler] ;
+    return nmb_insertMenuItem(parent, -1, caption);
+}
+
+nmb_Handle nmb_insertMenuItem(nmb_Handle parent, int inputIndex, const char* caption)
+{
+    if(!parent)
+    {
+        snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to create menu item because parent was NULL\n");
+        return NULL;
+    }
+
+    NSInteger index = adjustIndex(parent, inputIndex);
+
+    if (index < 0)
+    {
+        snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Invalid index '%ld' passed to '%s'\n", index, __func__);
+        return NULL;
+    }
+
+	NSMenuItem* item = [(NSMenu*)parent insertItemWithTitle:[NSString stringWithCString:caption encoding:NSUTF8StringEncoding] action:@selector(handleAction:) keyEquivalent:@"" atIndex:index];
+	[item setTarget:g.handler];
 	return item;
 }
 
 void nmb_appendSeparator(nmb_Handle parent)
 {
-	[(NSMenu*)parent addItem : [NSMenuItem separatorItem] ] ;
+    nmb_insertSeparator(parent, -1);
+}
+
+void nmb_insertSeparator(nmb_Handle parent, int inputIndex)
+{
+    if(!parent)
+    {
+        snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Failed to create menu item because parent was NULL\n");
+        return;
+    }
+
+    NSInteger index = adjustIndex(parent, inputIndex);
+
+    if (index < 0) // on mac the index must be positive
+    {
+        snprintf(errorBuffer, ERROR_BUFFER_SIZE, "Invalid index '%ld' passed to '%s'\n", index, __func__);
+        return;
+    }
+
+    [(NSMenu*)parent insertItem:[NSMenuItem separatorItem] atIndex:index];
 }
 
 void nmb_setMenuItemChecked(nmb_Handle menuItem, bool checked)
@@ -413,7 +479,6 @@ bool nmb_isMenuItemChecked(nmb_Handle menuItem)
 {
 	return ((NSMenuItem*)menuItem).state == NSControlStateValueOn;
 }
-
 
 void nmb_setMenuItemEnabled(nmb_Handle menuItem, bool enabled)
 {
