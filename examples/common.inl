@@ -14,10 +14,10 @@ nmb_Handle g_hHelpAbout = 0;
 
 void createMenuBar(void* nativeWindowHandle)
 {
-    nmb_Handle hMenuBar = nmb_setup(nativeWindowHandle);
+    nmb_setup(nativeWindowHandle);
     
-    nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
-    nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
+    nmb_Handle hFileMenu = nmb_appendMenu(NULL, "File");
+    nmb_Handle hEditMenu = nmb_appendMenu(NULL, "Edit");
     nmb_Handle hHelpMenu = nmb_appendMenu(NULL, "Help öäĂĹŸ");
 
     /* File menu */

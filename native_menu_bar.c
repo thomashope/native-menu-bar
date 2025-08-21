@@ -254,7 +254,6 @@ bool nmb_isMenuItemEnabled(nmb_Handle menuItem)
 static struct
 {
     MenuHandler* handler;
-    NSMenu* mainMenu; /* AKA the menu bar */
 } g;
 
 @implementation MenuHandler
@@ -345,6 +344,9 @@ static void createDefaultMenus(void)
     NSMenuItem* appMenuItem = [[NSMenuItem alloc] init];
     [appMenuItem setSubmenu:appMenu];
     [[NSApp mainMenu] addItem:appMenuItem];
+
+    [appMenu release];
+    [appMenuItem release];
 }
 
 static NSInteger adjustIndex(nmb_Handle parent, int index)
@@ -357,12 +359,12 @@ static NSInteger adjustIndex(nmb_Handle parent, int index)
     return index;
 }
 
-nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
+void nmb_setup(void* windowHandle /* unused on mac */)
 {
     UNUSED(windowHandle);
     memset(&g, 0, sizeof(g));
 	errorBuffer[0] = 0;
-	g.handler = [[MenuHandler alloc]init];
+	g.handler = [[MenuHandler alloc] init];
 
     /* Check if someone else (e.g. SDL) already built the app menu */
     NSInteger numItemsInAppleMenu = [[[[NSApp mainMenu] itemAtIndex:0] submenu] numberOfItems];
@@ -372,16 +374,17 @@ nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
     if(addDefaultMenuItems)
     {
         /* To add a custom app menu, we have to create our own main menu (aka menu bar) */
-        g.mainMenu = [[NSMenu alloc] init];
-        [NSApp setMainMenu:g.mainMenu];
+        NSMenu* mainMenu = [[NSMenu alloc] init];
+        [NSApp setMainMenu:mainMenu];
+        [mainMenu release];
         createDefaultMenus();
     }
-    else
-    {
-        g.mainMenu = [NSApp mainMenu];
-    }
+}
 
-    return g.mainMenu;
+void nmb_shutdown()
+{
+    [g.handler release];
+    g.handler = nil;
 }
 
 bool nmb_pollEvent(nmb_Event* event)
@@ -403,7 +406,7 @@ nmb_Handle nmb_insertMenu(nmb_Handle parent, int inputIndex, const char* caption
 {
     if(!parent)
     {
-        parent = g.mainMenu;
+        parent = [NSApp mainMenu];
     }
 
     NSInteger index = adjustIndex(parent, inputIndex);
@@ -415,8 +418,9 @@ nmb_Handle nmb_insertMenu(nmb_Handle parent, int inputIndex, const char* caption
     }
 
 	NSMenuItem* item = [(NSMenu*)parent insertItemWithTitle:[NSString stringWithCString:caption encoding:NSUTF8StringEncoding] action:nil keyEquivalent:@"" atIndex:index];
-	NSMenu* menu = [[NSMenu alloc]init];
+	NSMenu* menu = [[NSMenu alloc] init];
 	[item setSubmenu:menu];
+    [menu release];
 	return menu;
 }
 

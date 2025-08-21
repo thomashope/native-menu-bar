@@ -108,7 +108,7 @@ typedef struct nmb_Event
 *
 * @param windowHandle On Windows you should pass the HWND of your main window. On macOS you should pass NULL.
 */
-nmb_Handle nmb_setup(void* windowHandle);
+void nmb_setup(void* windowHandle);
 
 /** Every frame (or other regular interval) call this function in a loop to retrieve events sent by menus and respond to them. Once it returns false, all current events have been processed.
 *
