@@ -2,6 +2,17 @@
 
 [![Mac Build](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/mac-build.yml) [![Windows Build](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml/badge.svg)](https://github.com/thomashope/native-menu-bar/actions/workflows/windows-build.yaml)
 
+Native Menu Bar provides a single API for adding a native menu bar to your application that works on Windows and Mac.
+
+User interaction produces events which are forwarded to your application where they can be responded to using the same code on all platforms.
+
+features:
+
+* Menu bar with menus and submenus
+* Clickable menu items
+* Toggleable checkmark on individual menu items
+* Enable and disable individual menu items
+
 ## Building
 
 In general you can use this library by simply adding `native_menu_bar.h` and `native_menu_bar.c` to your project.
