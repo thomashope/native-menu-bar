@@ -47,6 +47,10 @@
     return YES;
 }
 
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    nmb_shutdown();
+}
+
 @end
 
 int main()
