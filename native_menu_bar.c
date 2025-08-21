@@ -347,7 +347,7 @@ static void createDefaultMenus(void)
     [[NSApp mainMenu] addItem:appMenuItem];
 }
 
-static NSInteger adjustIndex(NSMenu* parent, int index)
+static NSInteger adjustIndex(nmb_Handle parent, int index)
 {
     if(index < 0)
     {
