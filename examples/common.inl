@@ -1,4 +1,4 @@
-﻿#include "../native_menu_bar.h"
+#include "../native_menu_bar.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -18,7 +18,7 @@ void createMenuBar(void* nativeWindowHandle)
     
     nmb_Handle hFileMenu = nmb_appendMenu(hMenuBar, "File");
     nmb_Handle hEditMenu = nmb_appendMenu(hMenuBar, "Edit");
-    nmb_Handle hHelpMenu = nmb_appendMenu(NULL, u8"Help öäĂĹŸ");
+    nmb_Handle hHelpMenu = nmb_appendMenu(NULL, "Help öäĂĹŸ");
 
     /* File menu */
     g_hFileNew = nmb_appendMenuItem(hFileMenu, "New");
