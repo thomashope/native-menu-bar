@@ -12,13 +12,13 @@ typedef void* nmb_Handle;
 typedef enum nmb_Platform
 {
     nmb_Platform_windows,
-    nmb_Platform_macos,
+    nmb_Platform_macos
 } nmb_Platform_t;
 
 typedef enum nmb_EventType
 {
 	nmb_EventType_none,
-	nmb_EventType_itemTriggered,
+	nmb_EventType_itemTriggered
 } nmb_EventType_t;
 
 typedef struct nmb_Event
@@ -32,7 +32,7 @@ nmb_Handle nmb_setup(void* windowHandle);
 
 bool nmb_pollEvent(nmb_Event_t* event);
 
-nmb_Platform_t nmb_getPlatform();
+nmb_Platform_t nmb_getPlatform(void);
 
 nmb_Handle nmb_appendMenu(nmb_Handle parent, const char* caption);
 

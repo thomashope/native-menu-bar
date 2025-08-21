@@ -223,7 +223,7 @@ Result
 
  */
 
-static NSString* getApplicationName()
+static NSString* getApplicationName(void)
 {
     NSString *appName = nil;
 
@@ -247,7 +247,7 @@ static NSString* getApplicationName()
     return appName;
 }
 
-void createDefaultMenus()
+static void createDefaultMenus(void)
 {
     if (NSApp == nil)
         return;
@@ -296,9 +296,9 @@ nmb_Handle nmb_setup(void* windowHandle /* unused on mac */)
 bool nmb_pollEvent(nmb_Event_t* event)
 {
     return getEvent(event);
-};
+}
 
-nmb_Platform_t nmb_getPlatform()
+nmb_Platform_t nmb_getPlatform(void)
 {
     return nmb_Platform_macos;
 }
