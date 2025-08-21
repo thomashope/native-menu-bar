@@ -12,12 +12,12 @@ MVP Features
 Release Work
 
 - [x] add license
-- [ ] compile as C99 to latest C, C++98 to latest C++
-- [ ] compile on all of the above without warnings
+- [x] compile as C99 to latest C, C++98 to latest C++
+- [ ] compile on all of the above without warnings on windows and mac
 - [ ] make sure i'm doing cleanup and proper memory management and API and examples
 - [x] cross platform SDL2 example
 - [ ] inline documentation in .h
-- [ ] double check the API is using typical C practice
+- [x] double check the API is using typical C practice
 	(e.g. enum and type names, should I use stdbool.h or ints for returns, name conventions / case, etc.)
 - [ ] decide on text encoding (UTF8 everywhere?) and implement
 

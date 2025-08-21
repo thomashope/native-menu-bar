@@ -6,7 +6,7 @@ function ExampleProject(name)
     targetdir ("bin/".. _ACTION.."/"..name.."/%{cfg.buildcfg}")
     language "C++"
     cppdialect "C++98"
-    cdialect "c89"
+    cdialect "c99"
     architecture "x86_64"
     warnings "Default"
     flags "MultiProcessorCompile"
