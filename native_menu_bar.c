@@ -308,18 +308,19 @@ static NSString* getApplicationName(void)
 {
     NSString *appName = nil;
 
-    // check the plist
-    if (!appName)
-    {
-        appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-    }
-
+    /* check the plist for CFBundleName first. This should be a short name of 16 characters or fewer. */
     if (!appName)
     {
         appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     }
 
-    // failing that, use the process name
+    /* if the CFBundleName was not found, try the CFBundleDisplayName */
+    if (!appName)
+    {
+        appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    }
+
+    /* failing that, use the process name */
     if (!appName || [appName length] == 0)
     {
         appName = [[NSProcessInfo processInfo] processName];
