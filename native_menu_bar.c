@@ -408,7 +408,14 @@ nmb_Handle nmb_insertMenu(nmb_Handle parent, int inputIndex, const char* caption
 {
     if(!parent)
     {
+        /* If parent is null, insert into the menu bar */
         parent = [NSApp mainMenu];
+
+        if(inputIndex >= 0)
+        {
+            /* Offset 0 index to be the menu item AFTER the application menu. */
+            inputIndex++;
+        }
     }
 
     NSInteger index = adjustIndex(parent, inputIndex);
